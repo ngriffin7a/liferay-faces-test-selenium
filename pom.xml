@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.liferay.faces.test</groupId>
+    <artifactId>liferay-faces-test</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+    </properties>
+
+	<!--
+		Copy the following into your pom.xml in order to take advantage of features of IntegrationTesterBase.java via
+		the command line.
+	-->
+	<!--
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>true</RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>
+						<integration.browser>${integration.browser}</integration.browser>
+						<integration.log.level>${integration.log.level}</integration.log.level>
+						<integration.container>${integration.container}</integration.container>
+						<integration.host>${integration.host}</integration.host>
+						<integration.port>${integration.port}</integration.port>
+						<integration.context>${integration.context}</integration.context>
+						<integration.sign.in.context>${integration.sign.in.context}</integration.sign.in.context>
+					</systemPropertyVariables>
+					<properties>
+						<property>
+							<name>listener</name>
+							<value>com.liferay.faces.test.IntegrationTestSuiteListener</value>
+						</property>
+					</properties>
+					<includes>
+						<include>**/*Test.java,**/Test*.java,**/*TestCase.java,**/*Tester.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	-->
+
+	<dependencies>
+
+		<!-- Integration test dependencies. -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>2.53.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-chrome-driver</artifactId>
+			<version>2.53.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.codeborne</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>1.3.0</version>
+			<!-- Don't download the version of selenium that phantomjsdriver depends on since it is older than the
+			version we specify. -->
+			<exclusions>
+				<exclusion>
+					<artifactId>org.seleniumhq.selenium</artifactId>
+					<groupId>selenium-java</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>org.seleniumhq.selenium</artifactId>
+					<groupId>selenium-server</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>org.seleniumhq.selenium</artifactId>
+					<groupId>selenium-remote-driver</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+		<!-- End integration test dependencies. -->
+
+	</dependencies>
+</project>

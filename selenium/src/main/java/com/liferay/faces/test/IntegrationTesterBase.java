@@ -108,7 +108,7 @@ public abstract class IntegrationTesterBase {
 		}
 	}
 
-	/* package-private */ static void signIn() {
+	protected static void signIn() {
 
 		Browser browser = Browser.getInstance();
 		browser.navigateToURL(SIGN_IN_URL);
@@ -122,7 +122,8 @@ public abstract class IntegrationTesterBase {
 		passwordElement.clear();
 		passwordElement.sendKeys(password);
 		browser.click(signInButtonXpath);
-		browser.waitUntil(ExpectedConditions.and(ExpectedConditions.stalenessOf(loginElement), new PageLoaded()));
+		browser.waitUntil(ExpectedConditions.stalenessOf(loginElement));
+		browser.waitUntil(new PageLoaded());
 	}
 
 	/**

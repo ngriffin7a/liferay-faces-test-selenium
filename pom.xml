@@ -8,8 +8,8 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.liferay.faces.test</groupId>
-	<artifactId>com.liferay.faces.test.parent</artifactId>
+	<groupId>com.liferay.faces.test.selenium</groupId>
+	<artifactId>com.liferay.faces.test.selenium.parent</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Liferay Faces Test Parent</name>

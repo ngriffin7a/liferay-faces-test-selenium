@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.test.applicant;
+package com.liferay.faces.test.selenium.applicant;
 
 import org.junit.Test;
 
-import com.liferay.faces.test.Browser;
-import com.liferay.faces.test.IntegrationTesterBase;
+import com.liferay.faces.test.selenium.Browser;
+import com.liferay.faces.test.selenium.IntegrationTesterBase;
 
 
 /**

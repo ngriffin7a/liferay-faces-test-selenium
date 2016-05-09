@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.test;
+package com.liferay.faces.test.selenium;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

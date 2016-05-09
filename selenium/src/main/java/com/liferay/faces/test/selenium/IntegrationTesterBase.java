@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.test;
+package com.liferay.faces.test.selenium;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,7 +21,7 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.liferay.faces.test.expectedconditions.PageLoaded;
+import com.liferay.faces.test.selenium.expectedconditions.PageLoaded;
 
 
 /**

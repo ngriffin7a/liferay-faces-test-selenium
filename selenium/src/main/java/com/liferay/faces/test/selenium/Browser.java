@@ -105,8 +105,8 @@ public class Browser {
 		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
 
 		String elementText = element.getText();
-		Assert.assertEquals("Element " + xpath + " does not contain text \"" + text +
-			"\". Instead it contains text \"" + elementText + "\".", text, elementText);
+		Assert.assertTrue("Element " + xpath + " does not contain text \"" + text +
+			"\". Instead it contains text \"" + elementText + "\".", elementText.contains(text));
 	}
 
 	// Currently unused:
@@ -156,7 +156,7 @@ public class Browser {
 
 	public Action createClickAction(String xpath) {
 
-		Actions actions = new Actions(webDriver);
+		Actions actions = createActions();
 		WebElement element = getElement(xpath);
 		actions.click(element);
 
@@ -166,7 +166,7 @@ public class Browser {
 	// Currently unused:
 	public Action createSendKeysAction(String xpath, CharSequence... keys) {
 
-		Actions actions = new Actions(webDriver);
+		Actions actions = createActions();
 		WebElement element = getElement(xpath);
 		actions.sendKeys(element, keys);
 

@@ -9,11 +9,10 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.liferay.faces.test.selenium</groupId>
-	<artifactId>com.liferay.faces.test.selenium.parent</artifactId>
+	<artifactId>com.liferay.faces.test.selenium</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>Liferay Faces Test Parent</name>
-	<description>Parent POM for all Liferay Faces Test modules</description>
+	<name>Liferay Faces Test Selenium</name>
+	<description>Liferay Faces Test Selenium</description>
 
 	<organization>
 		<name>Liferay, Inc.</name>
@@ -74,9 +73,251 @@
 		<tag>HEAD</tag>
 	</scm>
 
-	<modules>
-		<module>selenium</module>
-	</modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+		<surefire.version>2.12</surefire.version>
+    </properties>
+
+	<!--
+		Copy the following into your pom.xml in order to take advantage of features of IntegrationTesterBase.java via
+		the command line.
+	-->
+	<!--
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>true</RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>
+						<integration.browser>${integration.browser}</integration.browser>
+						<integration.log.level>${integration.log.level}</integration.log.level>
+						<integration.container>${integration.container}</integration.container>
+						<integration.host>${integration.host}</integration.host>
+						<integration.port>${integration.port}</integration.port>
+						<integration.context>${integration.context}</integration.context>
+						<integration.sign.in.context>${integration.sign.in.context}</integration.sign.in.context>
+						<integration.login.xpath>${integration.login.xpath}</integration.login.xpath>
+						<integration.password.xpath>${integration.password.xpath}</integration.password.xpath>
+						<integration.sign.in.button.xpath>${integration.sign.in.button.xpath}</integration.sign.in.button.xpath>
+						<integration.login>${integration.login}</integration.login>
+						<integration.password>${integration.password}</integration.password>
+					</systemPropertyVariables>
+					<properties>
+						<property>
+							<name>listener</name>
+							<value>com.liferay.faces.test.selenium.IntegrationTestSuiteListener</value>
+						</property>
+					</properties>
+					<includes>
+						<include>**/*Test.java,**/Test*.java,**/*TestCase.java,**/*Tester.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	-->
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<archive>
+							<manifestEntries>
+								<Built-By>Release Manager</Built-By>
+								<Implementation-Title>${project.name}</Implementation-Title>
+								<Implementation-Version>${full.version}</Implementation-Version>
+								<Implementation-Vendor-Id>com.liferay</Implementation-Vendor-Id>
+								<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.5.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.1</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<pushChanges>false</pushChanges>
+						<localCheckout>true</localCheckout>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${surefire.version}</version>
+					<configuration>
+						<useFile>false</useFile>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-report-plugin</artifactId>
+					<version>${surefire.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.scm</groupId>
+					<artifactId>maven-scm-providers-git</artifactId>
+					<!-- http://jira.codehaus.org/browse/SCM-444 -->
+					<version>(,1.4]</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.8</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>1.1</version>
+					<executions>
+						<execution>
+							<phase>initialize</phase>
+							<goals>
+								<goal>create-timestamp</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<doCheck>false</doCheck>
+						<doUpdate>false</doUpdate>
+						<timestampFormat>MMM d, yyyy</timestampFormat>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<!-- MJAVADOC-275: Need version 2.8 or higher for release:prepare to generate JavaDoc -->
+						<version>2.10.3</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>rebel.xml</exclude>
+						</excludes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencies>
+
+		<!-- Integration test dependencies. -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>2.53.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-chrome-driver</artifactId>
+			<version>2.53.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.codeborne</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>1.3.0</version>
+			<!-- Don't download the version of selenium that phantomjsdriver depends on since it is older than -->
+			<!-- the version specified above. -->
+			<exclusions>
+				<exclusion>
+					<artifactId>org.seleniumhq.selenium</artifactId>
+					<groupId>selenium-java</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>org.seleniumhq.selenium</artifactId>
+					<groupId>selenium-server</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>org.seleniumhq.selenium</artifactId>
+					<groupId>selenium-remote-driver</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+		<!-- End integration test dependencies. -->
+
+	</dependencies>
 
 	<reporting>
 		<plugins>

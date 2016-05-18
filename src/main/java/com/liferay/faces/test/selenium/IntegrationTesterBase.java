@@ -111,14 +111,14 @@ public abstract class IntegrationTesterBase {
 	protected static void signIn() {
 
 		Browser browser = Browser.getInstance();
-		browser.navigateToURL(SIGN_IN_URL);
+		browser.get(SIGN_IN_URL);
 		browser.waitForElementPresent(loginXpath);
 
-		WebElement loginElement = browser.getElement(loginXpath);
+		WebElement loginElement = browser.findElementByXpath(loginXpath);
 		loginElement.clear();
 		loginElement.sendKeys(login);
 
-		WebElement passwordElement = browser.getElement(passwordXpath);
+		WebElement passwordElement = browser.findElementByXpath(passwordXpath);
 		passwordElement.clear();
 		passwordElement.sendKeys(password);
 		browser.click(signInButtonXpath);

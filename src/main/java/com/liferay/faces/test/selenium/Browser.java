@@ -15,10 +15,10 @@
  */
 package com.liferay.faces.test.selenium;
 
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.junit.Assert;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -37,7 +37,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * @author  Kyle Stiemann
  */
-public class Browser {
+public class Browser implements WebDriver {
 
 	private static WebDriver webDriver = null;
 	private static WebDriverWait wait = null;
@@ -90,50 +90,8 @@ public class Browser {
 		return instance;
 	}
 
-	public void assertElementPresent(String xpath) {
-
-		WebElement element = getElement(xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-	}
-
-	public void assertElementTextVisible(String xpath, String text) {
-
-		WebElement element = getElement(xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-
-		boolean elementDisplayed = element.isDisplayed();
-		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
-
-		String elementText = element.getText();
-		Assert.assertTrue("Element " + xpath + " does not contain text \"" + text +
-			"\". Instead it contains text \"" + elementText + "\".", elementText.contains(text));
-	}
-
-	// Currently unused:
-	public void assertElementValue(String xpath, String value) {
-
-		WebElement element = getElement(xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-
-		boolean elementDisplayed = element.isDisplayed();
-		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
-
-		String elementValue = element.getAttribute("value");
-		Assert.assertEquals("Element " + xpath + " does contain the value \"" + value +
-			"\". Instead it contains the value \"" + elementValue + "\".", value, elementValue);
-	}
-
-	public void assertElementVisible(String xpath) {
-
-		WebElement element = getElement(xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-
-		boolean elementDisplayed = element.isDisplayed();
-		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
-	}
-
 	public void click(String xpath) {
-		getElement(xpath).click();
+		findElementByXpath(xpath).click();
 	}
 
 	/**
@@ -149,6 +107,11 @@ public class Browser {
 		performAndWaitForAjaxRerender(createClickAction(xpath), xpath);
 	}
 
+	@Override
+	public void close() {
+		webDriver.close();
+	}
+
 	// Currently unused:
 	public Actions createActions() {
 		return new Actions(webDriver);
@@ -157,7 +120,7 @@ public class Browser {
 	public Action createClickAction(String xpath) {
 
 		Actions actions = createActions();
-		WebElement element = getElement(xpath);
+		WebElement element = findElementByXpath(xpath);
 		actions.click(element);
 
 		return actions.build();
@@ -167,7 +130,7 @@ public class Browser {
 	public Action createSendKeysAction(String xpath, CharSequence... keys) {
 
 		Actions actions = createActions();
-		WebElement element = getElement(xpath);
+		WebElement element = findElementByXpath(xpath);
 		actions.sendKeys(element, keys);
 
 		return actions.build();
@@ -189,8 +152,33 @@ public class Browser {
 		return javascriptExecutor.executeScript(script, args);
 	}
 
-	public void navigateToURL(String url) {
-		webDriver.navigate().to(url);
+	@Override
+	public WebElement findElement(By by) {
+		return webDriver.findElement(by);
+	}
+
+	public WebElement findElementByXpath(String xpath) {
+		return findElement(By.xpath(xpath));
+	}
+
+	@Override
+	public List<WebElement> findElements(By by) {
+		return webDriver.findElements(by);
+	}
+
+	@Override
+	public void get(String url) {
+		webDriver.get(url);
+	}
+
+	@Override
+	public Options manage() {
+		return webDriver.manage();
+	}
+
+	@Override
+	public Navigation navigate() {
+		return webDriver.navigate();
 	}
 
 	/**
@@ -201,20 +189,21 @@ public class Browser {
 	 */
 	public void performAndWaitForAjaxRerender(Action action, String rerenderXpath) {
 
-		WebElement rerenderElement = getElement(rerenderXpath);
+		WebElement rerenderElement = findElementByXpath(rerenderXpath);
 		action.perform();
 		logger.log(Level.INFO, "Waiting for element {0} to be stale.", rerenderXpath);
-		wait.until(ExpectedConditions.stalenessOf(rerenderElement));
+		waitUntil(ExpectedConditions.stalenessOf(rerenderElement));
 		logger.log(Level.INFO, "Element {0} is stale.", rerenderXpath);
 		waitForElementVisible(rerenderXpath);
 	}
 
+	@Override
 	public void quit() {
 		webDriver.quit();
 	}
 
 	public void sendKeys(String xpath, CharSequence... keys) {
-		getElement(xpath).sendKeys(keys);
+		findElementByXpath(xpath).sendKeys(keys);
 	}
 
 	// Currently unused:
@@ -233,11 +222,16 @@ public class Browser {
 		performAndWaitForAjaxRerender(createSendKeysAction(xpath, keys), xpath);
 	}
 
+	@Override
+	public TargetLocator switchTo() {
+		return webDriver.switchTo();
+	}
+
 	// Currently unused:
 	public void waitForElementNotPresent(String xpath) {
 
 		logger.log(Level.INFO, "Waiting for element {0} to not be present in the DOM.", xpath);
-		wait.until(ExpectedConditions.not(ExpectedConditions.presenceOfAllElementsLocatedBy(By.ByXPath.xpath(xpath))));
+		waitUntil(ExpectedConditions.not(ExpectedConditions.presenceOfAllElementsLocatedBy(By.ByXPath.xpath(xpath))));
 		logger.log(Level.INFO, "Element {0} is not present in the DOM.", xpath);
 	}
 
@@ -245,7 +239,7 @@ public class Browser {
 	public void waitForElementPresent(String xpath) {
 
 		logger.log(Level.INFO, "Waiting for element {0} to be present in the DOM.", xpath);
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.ByXPath.xpath(xpath)));
+		waitUntil(ExpectedConditions.presenceOfElementLocated(By.ByXPath.xpath(xpath)));
 		logger.log(Level.INFO, "Element {0} is present in the DOM.", xpath);
 	}
 
@@ -255,7 +249,7 @@ public class Browser {
 		String[] loggerArgs = new String[] { xpath, text };
 		waitForElementVisible(xpath);
 		logger.log(Level.INFO, "Waiting for element {0} to contain text \"{1}\".", loggerArgs);
-		wait.until(ExpectedConditions.textToBePresentInElementLocated(By.ByXPath.xpath(xpath), text));
+		waitUntil(ExpectedConditions.textToBePresentInElementLocated(By.ByXPath.xpath(xpath), text));
 		logger.log(Level.INFO, "Element {0} is visible and contains text \"{1}\".", loggerArgs);
 	}
 
@@ -265,23 +259,43 @@ public class Browser {
 		String[] loggerArgs = new String[] { xpath, value };
 		waitForElementVisible(xpath);
 		logger.log(Level.INFO, "Waiting for element {0} to contain value \"{1}\".", loggerArgs);
-		wait.until(ExpectedConditions.textToBePresentInElementValue(By.ByXPath.xpath(xpath), value));
+		waitUntil(ExpectedConditions.textToBePresentInElementValue(By.ByXPath.xpath(xpath), value));
 		logger.log(Level.INFO, "Element {0} is visible and contains value \"{1}\".", loggerArgs);
 	}
 
 	public void waitForElementVisible(String xpath) {
 
 		logger.log(Level.INFO, "Waiting for element {0} to be visible.", xpath);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.ByXPath.xpath(xpath)));
+		waitUntil(ExpectedConditions.visibilityOfElementLocated(By.ByXPath.xpath(xpath)));
 		logger.log(Level.INFO, "Element {0} is visible.", xpath);
 	}
 
-	// Currently unused:
 	public void waitUntil(ExpectedCondition expectedCondition) {
 		wait.until(expectedCondition);
 	}
 
-	public WebElement getElement(String xpath) {
-		return webDriver.findElement(By.xpath(xpath));
+	@Override
+	public String getCurrentUrl() {
+		return webDriver.getCurrentUrl();
+	}
+
+	@Override
+	public String getPageSource() {
+		return webDriver.getPageSource();
+	}
+
+	@Override
+	public String getTitle() {
+		return webDriver.getTitle();
+	}
+
+	@Override
+	public String getWindowHandle() {
+		return webDriver.getWindowHandle();
+	}
+
+	@Override
+	public Set<String> getWindowHandles() {
+		return webDriver.getWindowHandles();
 	}
 }

@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import com.liferay.faces.test.selenium.Browser;
 import com.liferay.faces.test.selenium.IntegrationTesterBase;
+import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 
 
 /**
@@ -30,21 +31,21 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 	public void runApplicantTest() throws Exception {
 
 		Browser browser = Browser.getInstance();
-		browser.navigateToURL(BASE_URL + getContext());
+		browser.get(BASE_URL + getContext());
 
 		// Wait to begin the test until the logo is rendered.
 		browser.waitForElementVisible(getLogoXpath());
 
 		// Test that an empty value submits successfully, but with validation errors.
 		browser.clickAndWaitForAjaxRerender(getSubmitButtonXpath());
-		browser.assertElementVisible(getFirstNameFieldErrorXpath());
+		SeleniumAssert.assertElementVisible(browser, getFirstNameFieldErrorXpath());
 
 		// Test that a text value submits successfully.
 		String text = "Hello World!";
 		browser.sendKeys(getFirstNameFieldXpath(), text);
 		browser.clickAndWaitForAjaxRerender(getSubmitButtonXpath());
-		browser.assertElementValue(getFirstNameFieldXpath(), text);
-		browser.assertElementVisible(getLogoXpath());
+		SeleniumAssert.assertElementValue(browser, getFirstNameFieldXpath(), text);
+		SeleniumAssert.assertElementVisible(browser, getLogoXpath());
 	}
 
 	protected abstract String getContext();

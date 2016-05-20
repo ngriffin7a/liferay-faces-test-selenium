@@ -15,8 +15,11 @@
  */
 package com.liferay.faces.test.selenium.assertion;
 
+import java.util.List;
+
 import org.junit.Assert;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.test.selenium.Browser;
@@ -26,6 +29,12 @@ import com.liferay.faces.test.selenium.Browser;
  * @author  Kyle Stiemann
  */
 public final class SeleniumAssert {
+
+	public static void assertElementNotPresent(Browser browser, String xpath) {
+
+		List<WebElement> elements = browser.findElements(By.xpath(xpath));
+		Assert.assertEquals("Element " + xpath + " is present in the DOM.", 0, elements.size());
+	}
 
 	public static void assertElementPresent(Browser browser, String xpath) {
 

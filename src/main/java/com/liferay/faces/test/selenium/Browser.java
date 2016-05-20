@@ -90,6 +90,14 @@ public class Browser implements WebDriver {
 		return instance;
 	}
 
+	public void centerElementInView(String xpath) {
+
+		// http://stackoverflow.com/questions/8922107/javascript-scrollintoview-middle-alignment#36499256
+		executeScript(
+			"window.scrollTo(0, (arguments[0].getBoundingClientRect().top + window.pageYOffset) - (window.innerHeight / 2))",
+			findElementByXpath(xpath));
+	}
+
 	public void click(String xpath) {
 		findElementByXpath(xpath).click();
 	}

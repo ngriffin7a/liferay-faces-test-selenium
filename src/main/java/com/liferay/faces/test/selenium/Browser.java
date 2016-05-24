@@ -180,6 +180,31 @@ public class Browser implements WebDriver {
 	}
 
 	@Override
+	public String getCurrentUrl() {
+		return webDriver.getCurrentUrl();
+	}
+
+	@Override
+	public String getPageSource() {
+		return webDriver.getPageSource();
+	}
+
+	@Override
+	public String getTitle() {
+		return webDriver.getTitle();
+	}
+
+	@Override
+	public String getWindowHandle() {
+		return webDriver.getWindowHandle();
+	}
+
+	@Override
+	public Set<String> getWindowHandles() {
+		return webDriver.getWindowHandles();
+	}
+
+	@Override
 	public Options manage() {
 		return webDriver.manage();
 	}
@@ -280,30 +305,5 @@ public class Browser implements WebDriver {
 
 	public void waitUntil(ExpectedCondition expectedCondition) {
 		wait.until(expectedCondition);
-	}
-
-	@Override
-	public String getCurrentUrl() {
-		return webDriver.getCurrentUrl();
-	}
-
-	@Override
-	public String getPageSource() {
-		return webDriver.getPageSource();
-	}
-
-	@Override
-	public String getTitle() {
-		return webDriver.getTitle();
-	}
-
-	@Override
-	public String getWindowHandle() {
-		return webDriver.getWindowHandle();
-	}
-
-	@Override
-	public Set<String> getWindowHandles() {
-		return webDriver.getWindowHandles();
 	}
 }

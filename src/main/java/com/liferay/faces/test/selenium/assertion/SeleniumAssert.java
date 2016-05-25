@@ -38,13 +38,13 @@ public final class SeleniumAssert {
 
 	public static void assertElementPresent(Browser browser, String xpath) {
 
-		WebElement element = browser.findElementByXpath(xpath);
+		WebElement element = findFirstElementByXpath(browser, xpath);
 		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
 	}
 
 	public static void assertElementTextVisible(Browser browser, String xpath, String text) {
 
-		WebElement element = browser.findElementByXpath(xpath);
+		WebElement element = findFirstElementByXpath(browser, xpath);
 		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
 
 		boolean elementDisplayed = element.isDisplayed();
@@ -57,7 +57,7 @@ public final class SeleniumAssert {
 
 	public static void assertElementValue(Browser browser, String xpath, String value) {
 
-		WebElement element = browser.findElementByXpath(xpath);
+		WebElement element = findFirstElementByXpath(browser, xpath);
 		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
 
 		boolean elementDisplayed = element.isDisplayed();
@@ -70,10 +70,27 @@ public final class SeleniumAssert {
 
 	public static void assertElementVisible(Browser browser, String xpath) {
 
-		WebElement element = browser.findElementByXpath(xpath);
+		WebElement element = findFirstElementByXpath(browser, xpath);
 		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
 
 		boolean elementDisplayed = element.isDisplayed();
 		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
+	}
+
+	/**
+	 * Returns the first element matching the xpath or null if no element is found. This method may be used in place of
+	 * {@link Browser#findElementByXpath(java.lang.String)} which throws an error when an element is not found instead
+	 * of returning null.
+	 */
+	private static WebElement findFirstElementByXpath(Browser browser, String xpath) {
+
+		WebElement element = null;
+		List<WebElement> elements = browser.findElements(By.xpath(xpath));
+
+		if (!elements.isEmpty()) {
+			element = elements.get(0);
+		}
+
+		return element;
 	}
 }

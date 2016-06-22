@@ -16,6 +16,7 @@
 package com.liferay.faces.test.selenium;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,10 +40,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class Browser implements WebDriver {
 
+	// Logger
+	private static final Logger logger = Logger.getLogger(Browser.class.getName());
+
+	// Private Static Variables
+	private static Browser instance = null;
 	private static WebDriver webDriver = null;
 	private static WebDriverWait wait = null;
-	private static Browser instance = null;
-	private static final Logger logger = Logger.getLogger(Browser.class.getName());
 
 	static {
 
@@ -53,9 +57,14 @@ public class Browser implements WebDriver {
 		}
 
 		String logLevelString = TestUtil.getSystemPropertyOrDefault("integration.log.level", defaultLogLevel);
+		logLevelString = logLevelString.toUpperCase(Locale.ENGLISH);
+
 		Level logLevel = Level.parse(logLevelString);
 		logger.setLevel(logLevel);
 	}
+
+	// Private Constants
+	private final String NAME;
 
 	private Browser() {
 
@@ -65,15 +74,16 @@ public class Browser implements WebDriver {
 			defaultBrowser = "firefox";
 		}
 
-		String browser = TestUtil.getSystemPropertyOrDefault("integration.browser", defaultBrowser);
+		String name = TestUtil.getSystemPropertyOrDefault("integration.browser", defaultBrowser);
+		NAME = name.toLowerCase(Locale.ENGLISH);
 
-		if ("phantomjs".equals(browser)) {
+		if ("phantomjs".equals(NAME)) {
 			webDriver = new PhantomJSDriver();
 		}
-		else if ("chrome".equals(browser)) {
+		else if ("chrome".equals(NAME)) {
 			webDriver = new ChromeDriver();
 		}
-		else if ("firefox".equals(browser)) {
+		else if ("firefox".equals(NAME)) {
 			webDriver = new FirefoxDriver();
 		}
 
@@ -152,7 +162,6 @@ public class Browser implements WebDriver {
 		return javascriptExecutor.executeAsyncScript(script, args);
 	}
 
-	// Currently unused:
 	public Object executeScript(String script, Object... args) {
 
 		JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
@@ -182,6 +191,10 @@ public class Browser implements WebDriver {
 	@Override
 	public String getCurrentUrl() {
 		return webDriver.getCurrentUrl();
+	}
+
+	public String getName() {
+		return NAME;
 	}
 
 	@Override
@@ -268,7 +281,6 @@ public class Browser implements WebDriver {
 		logger.log(Level.INFO, "Element {0} is not present in the DOM.", xpath);
 	}
 
-	// Currently unused:
 	public void waitForElementPresent(String xpath) {
 
 		logger.log(Level.INFO, "Waiting for element {0} to be present in the DOM.", xpath);

@@ -32,14 +32,32 @@ public final class SeleniumAssert {
 
 	public static void assertElementNotPresent(Browser browser, String xpath) {
 
-		List<WebElement> elements = browser.findElements(By.xpath(xpath));
-		Assert.assertEquals("Element " + xpath + " is present in the DOM.", 0, elements.size());
+		WebElement element = findFirstElementByXpath(browser, xpath);
+		Assert.assertNull("Element " + xpath + " is present in the DOM.", element);
 	}
 
 	public static void assertElementPresent(Browser browser, String xpath) {
 
 		WebElement element = findFirstElementByXpath(browser, xpath);
 		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
+	}
+
+	public static void assertElementTextInvisible(Browser browser, String xpath, String text) {
+
+		WebElement element = findFirstElementByXpath(browser, xpath);
+
+		boolean elementDisplayed = false;
+		String elementText = "";
+
+		if (element != null) {
+
+			elementDisplayed = element.isDisplayed();
+			elementText = element.getText();
+		}
+
+		Assert.assertTrue("Element " + xpath + " text \"" + elementText +
+			"\" is visible. Instead it should be invisible.",
+			((element == null) || !elementDisplayed || !elementText.contains(text)));
 	}
 
 	public static void assertElementTextVisible(Browser browser, String xpath, String text) {
@@ -64,7 +82,7 @@ public final class SeleniumAssert {
 		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
 
 		String elementValue = element.getAttribute("value");
-		Assert.assertEquals("Element " + xpath + " does contain the value \"" + value +
+		Assert.assertEquals("Element " + xpath + " does not contain the value \"" + value +
 			"\". Instead it contains the value \"" + elementValue + "\".", value, elementValue);
 	}
 

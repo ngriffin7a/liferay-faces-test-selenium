@@ -52,7 +52,7 @@ public class Browser implements WebDriver {
 
 		String defaultLogLevel = "WARNING";
 
-		if (!IntegrationTesterBase.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
+		if (!TestUtil.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
 			defaultLogLevel = "FINE";
 		}
 
@@ -70,7 +70,7 @@ public class Browser implements WebDriver {
 
 		String defaultBrowser = "phantomjs";
 
-		if (!IntegrationTesterBase.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
+		if (!TestUtil.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
 			defaultBrowser = "firefox";
 		}
 
@@ -87,6 +87,7 @@ public class Browser implements WebDriver {
 			webDriver = new FirefoxDriver();
 		}
 
+		// Note: Chrome does not maximize even with workarounds.
 		webDriver.manage().window().maximize();
 		wait = new WebDriverWait(webDriver, 5);
 	}

@@ -15,10 +15,78 @@
  */
 package com.liferay.faces.test.selenium;
 
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import com.liferay.faces.test.selenium.expectedconditions.PageLoaded;
+
+
 /**
  * @author  Kyle Stiemann
  */
 public final class TestUtil {
+
+	// Private Constants
+	private static final String SIGN_IN_URL;
+	private static final String LOGIN;
+	private static final String PASSWORD;
+
+	// Private Xpath
+	private static final String loginXpath;
+	private static final String passwordXpath;
+	private static final String signInButtonXpath;
+
+	// /* package-private */ Constants
+	/* package-private */ static final boolean RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN = Boolean.valueOf(TestUtil.getSystemPropertyOrDefault(
+				"RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN", "false"));
+
+	// Public Constants
+	public static final String BASE_URL;
+	public static final String CONTAINER = TestUtil.getSystemPropertyOrDefault("integration.container", "tomcat");
+	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";
+
+	static {
+
+		String defaultSignInContext = "";
+		String defaultLoginXpath = "";
+		String defaultPasswordXpath = "";
+		String defaultSignInButtonXpath = "";
+		String defaultLogin = "";
+		String defaultPassword = "";
+
+		if (CONTAINER.contains("liferay")) {
+
+			defaultSignInContext = "/c/portal/login";
+			defaultLoginXpath = "//input[contains(@id, '_login') and @type='text']";
+			defaultPasswordXpath = "//input[contains(@id, '_password') and @type='password']";
+			defaultSignInButtonXpath = "//button[contains(., 'Sign In')]";
+			defaultLogin = "test@liferay.com";
+			defaultPassword = "test";
+		}
+		else if (CONTAINER.contains("pluto")) {
+
+			defaultSignInContext = DEFAULT_PLUTO_CONTEXT;
+			defaultLoginXpath = "//input[contains(@id, '_username')]";
+			defaultPasswordXpath = "//input[contains(@id, '_password')]";
+			defaultSignInButtonXpath = "//input[contains(@id, '_login')]";
+			defaultLogin = "pluto";
+			defaultPassword = "pluto";
+		}
+
+		String host = TestUtil.getSystemPropertyOrDefault("integration.host", "localhost");
+		String port = TestUtil.getSystemPropertyOrDefault("integration.port", "8080");
+		String signInContext = TestUtil.getSystemPropertyOrDefault("integration.sign.in.context", defaultSignInContext);
+
+		BASE_URL = "http://" + host + ":" + port;
+		SIGN_IN_URL = BASE_URL + signInContext;
+
+		loginXpath = TestUtil.getSystemPropertyOrDefault("integration.login.xpath", defaultLoginXpath);
+		passwordXpath = TestUtil.getSystemPropertyOrDefault("integration.password.xpath", defaultPasswordXpath);
+		signInButtonXpath = TestUtil.getSystemPropertyOrDefault("integration.sign.in.button.xpath",
+				defaultSignInButtonXpath);
+		LOGIN = TestUtil.getSystemPropertyOrDefault("integration.login", defaultLogin);
+		PASSWORD = TestUtil.getSystemPropertyOrDefault("integration.password", defaultPassword);
+	}
 
 	private TestUtil() {
 		throw new AssertionError();
@@ -39,5 +107,23 @@ public final class TestUtil {
 		}
 
 		return propertyValue;
+	}
+
+	/* package-private */ static void signIn() {
+
+		Browser browser = Browser.getInstance();
+		browser.get(SIGN_IN_URL);
+		browser.waitForElementPresent(loginXpath);
+
+		WebElement loginElement = browser.findElementByXpath(loginXpath);
+		loginElement.clear();
+		loginElement.sendKeys(LOGIN);
+
+		WebElement passwordElement = browser.findElementByXpath(passwordXpath);
+		passwordElement.clear();
+		passwordElement.sendKeys(PASSWORD);
+		browser.click(signInButtonXpath);
+		browser.waitUntil(ExpectedConditions.stalenessOf(loginElement));
+		browser.waitUntil(new PageLoaded());
 	}
 }

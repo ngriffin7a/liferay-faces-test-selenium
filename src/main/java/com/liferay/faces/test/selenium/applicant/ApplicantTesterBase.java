@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import com.liferay.faces.test.selenium.Browser;
 import com.liferay.faces.test.selenium.IntegrationTesterBase;
+import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 
 
@@ -31,7 +32,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 	public void runApplicantTest() throws Exception {
 
 		Browser browser = Browser.getInstance();
-		browser.get(BASE_URL + getContext());
+		browser.get(TestUtil.BASE_URL + getContext());
 
 		// Wait to begin the test until the logo is rendered.
 		browser.waitForElementVisible(getLogoXpath());

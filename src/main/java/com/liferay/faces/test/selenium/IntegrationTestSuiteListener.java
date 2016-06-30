@@ -40,8 +40,8 @@ public class IntegrationTestSuiteListener extends RunListener {
 
 		super.testRunStarted(description);
 
-		if (!"tomcat".equals(IntegrationTesterBase.CONTAINER)) {
-			IntegrationTesterBase.signIn();
+		if (!"tomcat".equals(TestUtil.CONTAINER)) {
+			TestUtil.signIn();
 		}
 	}
 }

@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.test.selenium;
 
-import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
@@ -28,20 +27,7 @@ public class IntegrationTestSuiteListener extends RunListener {
 	@Override
 	public void testRunFinished(Result result) throws Exception {
 
-		// When the browser is phantomjs or chrome, WebDriver.close() does not quit the browser (like it is supposed to
-		// https://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/WebDriver.html#quit%28%29), so we
-		// use WebDriver.quit() instead.
-		Browser.getInstance().quit();
+		IntegrationTesterBase.doTearDown();
 		super.testRunFinished(result);
-	}
-
-	@Override
-	public void testRunStarted(Description description) throws Exception {
-
-		super.testRunStarted(description);
-
-		if (!"tomcat".equals(TestUtil.CONTAINER)) {
-			TestUtil.signIn();
-		}
 	}
 }

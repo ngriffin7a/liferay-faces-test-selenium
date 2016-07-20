@@ -109,9 +109,8 @@ public final class TestUtil {
 		return propertyValue;
 	}
 
-	/* package-private */ static void signIn() {
+	public static void signIn(Browser browser) {
 
-		Browser browser = Browser.getInstance();
 		browser.get(SIGN_IN_URL);
 		browser.waitForElementPresent(loginXpath);
 

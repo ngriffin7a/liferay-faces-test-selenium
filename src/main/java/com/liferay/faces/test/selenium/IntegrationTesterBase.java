@@ -16,7 +16,7 @@
 package com.liferay.faces.test.selenium;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 
 
 /**
@@ -24,19 +24,8 @@ import org.junit.BeforeClass;
  */
 public abstract class IntegrationTesterBase {
 
-	/**
-	 * {@link TestSuiteListener#testRunStarted()} is used to sign in to the container when the tests are run with the
-	 * maven-surefire-plugin. However, {@link TestSuiteListener#testRunStarted()} is not called when the tests are not
-	 * run with the maven-surefire-plugin (i.e. when the tests are run from an IDE). So when the tests are run from an
-	 * IDE, it is necessary to sign in to the container before each test class is run.
-	 */
-	@BeforeClass
-	public static void setUp() {
-
-		if (!TestUtil.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN && !TestUtil.CONTAINER.equals("tomcat")) {
-			TestUtil.signIn();
-		}
-	}
+	// Private Static Data Members
+	private static boolean setUp = false;
 
 	/**
 	 * {@link TestSuiteListener#testRunFinished()} is used to shut down the browser/webDriver when the tests are run
@@ -48,12 +37,30 @@ public abstract class IntegrationTesterBase {
 	public static void tearDown() {
 
 		if (!TestUtil.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
-
-			// When the browser is phantomjs or chrome, WebDriver.close() does not quit the browser (like it is
-			// supposed to
-			// https://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/WebDriver.html#quit%28%29),
-			// so we use WebDriver.quit() instead.
-			Browser.getInstance().quit();
+			doTearDown();
 		}
+	}
+
+	protected static void doTearDown() {
+
+		// When the browser is phantomjs or chrome, WebDriver.close() does not quit the browser (like it is
+		// supposed to
+		// https://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/WebDriver.html#quit%28%29),
+		// so we use WebDriver.quit() instead.
+		Browser.getInstance().quit();
+	}
+
+	@Before
+	public final void setUp() {
+
+		if (!setUp) {
+
+			doSetUp();
+			setUp = true;
+		}
+	}
+
+	protected void doSetUp() {
+		TestUtil.signIn(Browser.getInstance());
 	}
 }

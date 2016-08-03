@@ -67,9 +67,9 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/ngriffin7a/liferay-faces-test</connection>
-		<developerConnection>scm:git:https://github.com/ngriffin7a/liferay-faces-test</developerConnection>
-		<url>scm:git:https://github.com/ngriffin7a/liferay-faces-test</url>
+		<connection>scm:git:https://github.com/ngriffin7a/liferay-faces-test-selenium</connection>
+		<developerConnection>scm:git:https://github.com/ngriffin7a/liferay-faces-test-selenium</developerConnection>
+		<url>scm:git:https://github.com/ngriffin7a/liferay-faces-test-selenium</url>
 		<tag>HEAD</tag>
 	</scm>
 

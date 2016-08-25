@@ -186,6 +186,7 @@ public class Browser implements WebDriver {
 
 	@Override
 	public void get(String url) {
+		logger.log(Level.INFO, "navigating to: {0}", url);
 		webDriver.get(url);
 	}
 

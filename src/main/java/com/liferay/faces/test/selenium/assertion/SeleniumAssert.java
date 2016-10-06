@@ -74,12 +74,19 @@ public final class SeleniumAssert {
 	}
 
 	public static void assertElementValue(Browser browser, String xpath, String value) {
+		assertElementValue(browser, xpath, value, true);
+	}
+
+	public static void assertElementValue(Browser browser, String xpath, String value, boolean elementMustBeVisible) {
 
 		WebElement element = findFirstElementByXpath(browser, xpath);
 		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
 
-		boolean elementDisplayed = element.isDisplayed();
-		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
+		if (elementMustBeVisible) {
+
+			boolean elementDisplayed = element.isDisplayed();
+			Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
+		}
 
 		String elementValue = element.getAttribute("value");
 		Assert.assertEquals("Element " + xpath + " does not contain the value \"" + value +

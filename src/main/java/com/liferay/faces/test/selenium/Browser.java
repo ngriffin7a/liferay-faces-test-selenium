@@ -23,10 +23,12 @@ import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -38,7 +40,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * @author  Kyle Stiemann
  */
-public class Browser implements WebDriver {
+public class Browser implements WebDriver, JavascriptExecutor {
 
 	// Logger
 	private static final Logger logger = Logger.getLogger(Browser.class.getName());
@@ -49,18 +51,7 @@ public class Browser implements WebDriver {
 	private static WebDriverWait wait = null;
 
 	static {
-
-		String defaultLogLevel = "WARNING";
-
-		if (!TestUtil.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
-			defaultLogLevel = "FINE";
-		}
-
-		String logLevelString = TestUtil.getSystemPropertyOrDefault("integration.log.level", defaultLogLevel);
-		logLevelString = logLevelString.toUpperCase(Locale.ENGLISH);
-
-		Level logLevel = Level.parse(logLevelString);
-		logger.setLevel(logLevel);
+		logger.setLevel(TestUtil.getLogLevel());
 	}
 
 	// Private Constants
@@ -109,6 +100,23 @@ public class Browser implements WebDriver {
 			findElementByXpath(xpath));
 	}
 
+	public void clear(String xpath) {
+
+		WebElement element = findElementByXpath(xpath);
+		String value = element.getAttribute("value");
+
+		if ((value != null) && !value.equals("")) {
+
+			CharSequence[] clearKeys = new CharSequence[value.length()];
+
+			for (int i = 0; i < value.length(); i++) {
+				clearKeys[i] = Keys.BACK_SPACE;
+			}
+
+			sendKeys(xpath, clearKeys);
+		}
+	}
+
 	public void click(String xpath) {
 		findElementByXpath(xpath).click();
 	}
@@ -145,17 +153,7 @@ public class Browser implements WebDriver {
 		return actions.build();
 	}
 
-	// Currently unused:
-	public Action createSendKeysAction(String xpath, CharSequence... keys) {
-
-		Actions actions = createActions();
-		WebElement element = findElementByXpath(xpath);
-		actions.sendKeys(element, keys);
-
-		return actions.build();
-	}
-
-	// Currently unused:
+	@Override
 	public Object executeAsyncScript(String script, Object... args) {
 
 		JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
@@ -163,6 +161,7 @@ public class Browser implements WebDriver {
 		return javascriptExecutor.executeAsyncScript(script, args);
 	}
 
+	@Override
 	public Object executeScript(String script, Object... args) {
 
 		JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
@@ -186,7 +185,8 @@ public class Browser implements WebDriver {
 
 	@Override
 	public void get(String url) {
-		logger.log(Level.INFO, "navigating to: {0}", url);
+
+		logger.log(Level.INFO, "Navigating to: {0}", url);
 		webDriver.get(url);
 	}
 
@@ -252,22 +252,6 @@ public class Browser implements WebDriver {
 
 	public void sendKeys(String xpath, CharSequence... keys) {
 		findElementByXpath(xpath).sendKeys(keys);
-	}
-
-	// Currently unused:
-	/**
-	 * Sends keys to the element specified via xpath and waits for the element to be rerendered via Ajax. This method
-	 * will only work if the element receiving the keys is also rerendered via Ajax. If the element receiving the keys
-	 * will not be rerendered via Ajax, then use {@link
-	 * Browser#performAndWaitForAjaxRerender(org.openqa.selenium.interactions.Action, java.lang.String)} with {@link
-	 * Browser#createSendKeysAction(java.lang.String, java.lang.CharSequence...)} and the xpath of an element which will
-	 * be rerendered instead.
-	 *
-	 * @param  xpath  The xpath of the element to be clicked and rerendered.
-	 * @param  keys   The keys to be sent.
-	 */
-	public void sendKeysAndWaitForAjaxRerender(String xpath, CharSequence... keys) {
-		performAndWaitForAjaxRerender(createSendKeysAction(xpath, keys), xpath);
 	}
 
 	@Override

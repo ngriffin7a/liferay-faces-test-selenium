@@ -22,7 +22,7 @@ import org.junit.runner.notification.RunListener;
 /**
  * @author  Kyle Stiemann
  */
-public class IntegrationTestSuiteListener extends RunListener {
+public final class IntegrationTestSuiteListener extends RunListener {
 
 	@Override
 	public void testRunFinished(Result result) throws Exception {

@@ -94,6 +94,7 @@
 					<systemPropertyVariables>
 						<RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>true</RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>
 						<integration.browser>${integration.browser}</integration.browser>
+						<integration.browser.wait.time.out>${integration.browser.wait.time.out}</integration.browser.wait.time.out>
 						<integration.log.level>${integration.log.level}</integration.log.level>
 						<integration.container>${integration.container}</integration.container>
 						<integration.host>${integration.host}</integration.host>

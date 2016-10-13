@@ -18,8 +18,6 @@ package com.liferay.faces.test.selenium.applicant;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -47,17 +45,10 @@ import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
-	// Logger
-	private static final Logger logger = Logger.getLogger(ApplicantTesterBase.class.getName());
-
 	// Private Constants
 	private static final String EDIT_LINK_XPATH = "//a[contains(@id,'editLink')]";
 	private static final String LIFERAY_JSF_JERSEY_PNG_FILE_PATH = System.getProperty("java.io.tmpdir") +
 		"liferay-jsf-jersey.png";
-
-	static {
-		logger.setLevel(TestUtil.getLogLevel());
-	}
 
 	@BeforeClass
 	public static void setUpApplicantTester() {
@@ -88,18 +79,18 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		SeleniumAssert.assertElementVisible(browser, getPostalCodeFieldXpath());
 		SeleniumAssert.assertElementVisible(browser, getShowHideCommentsLinkXpath());
 		assertFileUploadChooserVisible(browser);
-		assertLibraryVisible(browser, "Mojarra");
-		assertLibraryVisible(browser, "Liferay Faces Alloy");
-		assertLibraryVisible(browser, "Liferay Faces Bridge Impl");
+		SeleniumAssert.assertLibraryVisible(browser, "Mojarra");
+		SeleniumAssert.assertLibraryVisible(browser, "Liferay Faces Alloy");
+		SeleniumAssert.assertLibraryVisible(browser, "Liferay Faces Bridge Impl");
 
 		if (TestUtil.getContainer().contains("liferay")) {
-			assertLibraryVisible(browser, "Liferay Faces Bridge Ext");
+			SeleniumAssert.assertLibraryVisible(browser, "Liferay Faces Bridge Ext");
 		}
 
 		String extraLibraryName = getExtraLibraryName();
 
 		if (extraLibraryName != null) {
-			assertLibraryVisible(browser, getExtraLibraryName());
+			SeleniumAssert.assertLibraryVisible(browser, getExtraLibraryName());
 		}
 	}
 
@@ -327,14 +318,6 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 	protected void assertFileUploadChooserVisible(Browser browser) {
 		SeleniumAssert.assertElementVisible(browser, getFileUploadChooserXpath());
-	}
-
-	protected void assertLibraryVisible(Browser browser, String libraryName) {
-
-		String libraryVersionXpath = "//li[contains(.,'" + libraryName + "')]";
-		WebElement libraryVersionElement = browser.findElementByXpath(libraryVersionXpath);
-		logger.log(Level.INFO, libraryVersionElement.getText());
-		SeleniumAssert.assertElementVisible(browser, libraryVersionXpath);
 	}
 
 	protected void clearProvince(Browser browser) {

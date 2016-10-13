@@ -117,15 +117,13 @@ public abstract class IntegrationTesterBase {
 		String passwordXpath, String password, String signInButtonXpath) {
 
 		browser.get(signInURL);
-		browser.waitForElementPresent(loginXpath);
+		browser.waitForElementVisible(loginXpath);
+		browser.clear(loginXpath);
+		browser.sendKeys(loginXpath, login);
+		browser.clear(passwordXpath);
+		browser.sendKeys(passwordXpath, password);
 
 		WebElement loginElement = browser.findElementByXpath(loginXpath);
-		loginElement.clear();
-		loginElement.sendKeys(login);
-
-		WebElement passwordElement = browser.findElementByXpath(passwordXpath);
-		passwordElement.clear();
-		passwordElement.sendKeys(password);
 		browser.click(signInButtonXpath);
 		browser.waitUntil(ExpectedConditions.stalenessOf(loginElement));
 		browser.waitForElementVisible("//body");

@@ -16,6 +16,8 @@
 package com.liferay.faces.test.selenium.assertion;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Assert;
 
@@ -23,12 +25,20 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.test.selenium.Browser;
+import com.liferay.faces.test.selenium.TestUtil;
 
 
 /**
  * @author  Kyle Stiemann
  */
 public final class SeleniumAssert {
+
+	// Logger
+	private static final Logger logger = Logger.getLogger(SeleniumAssert.class.getName());
+
+	static {
+		logger.setLevel(TestUtil.getLogLevel());
+	}
 
 	public static void assertElementNotPresent(Browser browser, String xpath) {
 
@@ -100,6 +110,14 @@ public final class SeleniumAssert {
 
 		boolean elementDisplayed = element.isDisplayed();
 		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
+	}
+
+	public static void assertLibraryVisible(Browser browser, String libraryName) {
+
+		String libraryVersionXpath = "//li[contains(.,'" + libraryName + "')]";
+		WebElement libraryVersionElement = browser.findElementByXpath(libraryVersionXpath);
+		logger.log(Level.INFO, libraryVersionElement.getText());
+		SeleniumAssert.assertElementVisible(browser, libraryVersionXpath);
 	}
 
 	/**

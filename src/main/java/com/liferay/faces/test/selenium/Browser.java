@@ -112,6 +112,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 				clearKeys[i] = Keys.BACK_SPACE;
 			}
 
+			sendKeys(xpath, Keys.END);
 			sendKeys(xpath, clearKeys);
 		}
 	}

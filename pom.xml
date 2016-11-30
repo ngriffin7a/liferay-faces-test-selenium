@@ -89,36 +89,44 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
+				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.19.1</version>
-				<configuration>
-					<systemPropertyVariables>
-						<RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>true</RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>
-						<integration.browser>${integration.browser}</integration.browser>
-						<integration.browser.wait.time.out>${integration.browser.wait.time.out}</integration.browser.wait.time.out>
-						<integration.log.level>${integration.log.level}</integration.log.level>
-						<integration.container>${integration.container}</integration.container>
-						<integration.host>${integration.host}</integration.host>
-						<integration.port>${integration.port}</integration.port>
-						<integration.context>${integration.context}</integration.context>
-						<integration.sign.in.context>${integration.sign.in.context}</integration.sign.in.context>
-						<integration.login.xpath>${integration.login.xpath}</integration.login.xpath>
-						<integration.password.xpath>${integration.password.xpath}</integration.password.xpath>
-						<integration.sign.in.button.xpath>${integration.sign.in.button.xpath}</integration.sign.in.button.xpath>
-						<integration.login>${integration.login}</integration.login>
-						<integration.password>${integration.password}</integration.password>
-					</systemPropertyVariables>
-					<properties>
-						<property>
-							<name>listener</name>
-							<value>com.liferay.faces.test.selenium.IntegrationTestSuiteListener</value>
-						</property>
-					</properties>
-					<includes>
-						<include>**/*Test.java,**/Test*.java,**/*TestCase.java,**/*Tester.java</include>
-					</includes>
-					<trimStackTrace>false</trimStackTrace>
-				</configuration>
+				<executions>
+					<execution>
+						<id>selenium-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<systemPropertyVariables>
+								<RUNNING_WITH_MAVEN>true</RUNNING_WITH_MAVEN>
+								<integration.browser>${integration.browser}</integration.browser>
+								<integration.browser.wait.time.out>${integration.browser.wait.time.out}</integration.browser.wait.time.out>
+								<integration.log.level>${integration.log.level}</integration.log.level>
+								<integration.container>${integration.container}</integration.container>
+								<integration.host>${integration.host}</integration.host>
+								<integration.port>${integration.port}</integration.port>
+								<integration.sign.in.context>${integration.sign.in.context}</integration.sign.in.context>
+								<integration.login.xpath>${integration.login.xpath}</integration.login.xpath>
+								<integration.password.xpath>${integration.password.xpath}</integration.password.xpath>
+								<integration.sign.in.button.xpath>${integration.sign.in.button.xpath}</integration.sign.in.button.xpath>
+								<integration.login>${integration.login}</integration.login>
+								<integration.password>${integration.password}</integration.password>
+							</systemPropertyVariables>
+							<properties>
+								<property>
+									<name>listener</name>
+									<value>com.liferay.faces.test.selenium.IntegrationTestSuiteListener</value>
+								</property>
+							</properties>
+							<includes>
+								<include>**/*Test.java,**/Test*.java,**/*TestCase.java,**/*Tester.java</include>
+							</includes>
+							<trimStackTrace>false</trimStackTrace>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

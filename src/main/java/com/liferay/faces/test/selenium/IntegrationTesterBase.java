@@ -32,14 +32,14 @@ public abstract class IntegrationTesterBase {
 
 	/**
 	 * {@link TestSuiteListener#testRunFinished()} is used to shut down the browser/webDriver when the tests are run
-	 * with the maven-surefire-plugin. However, {@link TestSuiteListener#testRunFinished()} is not called when the tests
-	 * are not run with the maven-surefire-plugin (i.e. when the tests are run from an IDE). So when the tests are run
-	 * from an IDE, it is necessary to shutdown the browser after each test class is run.
+	 * with the maven. However, {@link TestSuiteListener#testRunFinished()} is not called when the tests are not run
+	 * with the maven (i.e. when the tests are run from an IDE). So when the tests are run from an IDE, it is necessary
+	 * to shutdown the browser after each test class is run.
 	 */
 	@AfterClass
 	public static void tearDown() {
 
-		if (!TestUtil.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
+		if (!TestUtil.RUNNING_WITH_MAVEN) {
 			doTearDown();
 		}
 	}

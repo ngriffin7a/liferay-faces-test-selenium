@@ -29,8 +29,8 @@ public final class TestUtil {
 	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";
 
 	// /* package-private */ Constants
-	/* package-private */ static final boolean RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN = Boolean.valueOf(TestUtil.getSystemPropertyOrDefault(
-				"RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN", "false"));
+	/* package-private */ static final boolean RUNNING_WITH_MAVEN = Boolean.valueOf(TestUtil.getSystemPropertyOrDefault(
+				"RUNNING_WITH_MAVEN", "false"));
 
 	private TestUtil() {
 		throw new AssertionError();
@@ -69,7 +69,7 @@ public final class TestUtil {
 
 		String defaultLogLevel = "WARNING";
 
-		if (!RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
+		if (!RUNNING_WITH_MAVEN) {
 			defaultLogLevel = "FINE";
 		}
 

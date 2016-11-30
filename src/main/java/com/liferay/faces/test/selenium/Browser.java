@@ -60,7 +60,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 
 		String defaultBrowser = "phantomjs";
 
-		if (!TestUtil.RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN) {
+		if (!TestUtil.RUNNING_WITH_MAVEN) {
 			defaultBrowser = "firefox";
 		}
 

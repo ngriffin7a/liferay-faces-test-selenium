@@ -46,8 +46,7 @@ import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 	// Private Constants
-	private static final String EDIT_LINK_XPATH = "//a[contains(@id,'editLink')]";
-	private static final String LIFERAY_JSF_JERSEY_PNG_FILE_PATH = System.getProperty("java.io.tmpdir") +
+	protected static final String LIFERAY_JSF_JERSEY_PNG_FILE_PATH = System.getProperty("java.io.tmpdir") +
 		"liferay-jsf-jersey.png";
 
 	@BeforeClass
@@ -90,7 +89,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String extraLibraryName = getExtraLibraryName();
 
 		if (extraLibraryName != null) {
-			SeleniumAssert.assertLibraryVisible(browser, getExtraLibraryName());
+			SeleniumAssert.assertLibraryVisible(browser, extraLibraryName);
 		}
 	}
 
@@ -99,7 +98,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		// Test that changing the date pattern via preferences changes the Birthday value in the portlet.
 		Browser browser = Browser.getInstance();
-		browser.click(EDIT_LINK_XPATH);
+		browser.click(getEditModeXpath());
 
 		String datePatternPreferencesXpath = getDatePatternPreferencesXpath();
 
@@ -140,7 +139,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		SeleniumAssert.assertElementValue(browser, dateOfBirthFieldXpath, todayString);
 
 		// Test that resetting the date pattern via preferences changes the Birthday year back to the long version.
-		browser.click(EDIT_LINK_XPATH);
+		browser.click(getEditModeXpath());
 
 		try {
 			browser.waitForElementVisible(datePatternPreferencesXpath);
@@ -320,6 +319,18 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		SeleniumAssert.assertElementVisible(browser, getFileUploadChooserXpath());
 	}
 
+	protected void clearAllFields(Browser browser) {
+
+		browser.clear(getFirstNameFieldXpath());
+		browser.clear(getLastNameFieldXpath());
+		browser.clear(getEmailAddressFieldXpath());
+		browser.clear(getPhoneNumberFieldXpath());
+		browser.clear(getDateOfBirthFieldXpath());
+		browser.clear(getCityFieldXpath());
+		clearProvince(browser);
+		browser.clear(getPostalCodeFieldXpath());
+	}
+
 	protected void clearProvince(Browser browser) {
 		createSelect(browser, getProvinceIdFieldXpath()).selectByVisibleText("Select");
 	}
@@ -349,6 +360,10 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 	protected String getDatePatternPreferencesXpath() {
 		return "//input[contains(@id,':datePattern')]";
+	}
+
+	protected String getEditModeXpath() {
+		return "//a[contains(@id,'editLink')]";
 	}
 
 	protected String getEmailAddressFieldXpath() {
@@ -423,6 +438,16 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		return "//tr[@class='portlet-section-body results-row']/td[2]";
 	}
 
+	protected void resetBrowser() {
+
+		// Reset everything in case there was an error.
+		Browser browser = Browser.getInstance();
+		browser.manage().deleteAllCookies();
+		signIn(browser);
+		browser.get(TestUtil.DEFAULT_BASE_URL + getContext());
+		browser.waitForElementVisible(getLogoXpath());
+	}
+
 	protected void selectDate(Browser browser) {
 		browser.sendKeys(getDateOfBirthFieldXpath(), "01/02/3456");
 	}
@@ -444,27 +469,5 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		browser.click(getSubmitFileButtonXpath());
 		browser.waitForElementVisible(getUploadedFileXpath());
-	}
-
-	private void clearAllFields(Browser browser) {
-
-		browser.clear(getFirstNameFieldXpath());
-		browser.clear(getLastNameFieldXpath());
-		browser.clear(getEmailAddressFieldXpath());
-		browser.clear(getPhoneNumberFieldXpath());
-		browser.clear(getDateOfBirthFieldXpath());
-		browser.clear(getCityFieldXpath());
-		clearProvince(browser);
-		browser.clear(getPostalCodeFieldXpath());
-	}
-
-	private void resetBrowser() {
-
-		// Reset everything in case there was an error.
-		Browser browser = Browser.getInstance();
-		browser.manage().deleteAllCookies();
-		signIn(browser);
-		browser.get(TestUtil.DEFAULT_BASE_URL + getContext());
-		browser.waitForElementVisible(getLogoXpath());
 	}
 }

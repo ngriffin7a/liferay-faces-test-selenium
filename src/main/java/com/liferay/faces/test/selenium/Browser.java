@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2016 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,17 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
 
 /**
@@ -68,13 +73,49 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		NAME = name.toLowerCase(Locale.ENGLISH);
 
 		if ("phantomjs".equals(NAME)) {
-			webDriver = new PhantomJSDriver();
+
+			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+
+			// Set the Accept-Language header to "en-US,en;q=0.5" to ensure that it isn't set to "en-US," (the default).
+			desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_PAGE_CUSTOMHEADERS_PREFIX +
+				"Accept-Language", "en-US,en;q=0.8");
+
+			String phantomJSLogLevel;
+
+			Level logLevel = TestUtil.getLogLevel();
+
+			if (logLevel.intValue() == Level.OFF.intValue()) {
+				phantomJSLogLevel = "NONE";
+			}
+			else if (logLevel.intValue() > Level.WARNING.intValue()) {
+				phantomJSLogLevel = "ERROR";
+			}
+			else if (logLevel.intValue() > Level.INFO.intValue()) {
+				phantomJSLogLevel = "WARN";
+			}
+			else if (logLevel.intValue() > Level.CONFIG.intValue()) {
+				phantomJSLogLevel = "INFO";
+			}
+			else { // if (logLevel.intValue() <= Level.CONFIG.intValue())
+				phantomJSLogLevel = "DEBUG";
+			}
+
+			String[] phantomArgs = new String[1];
+			phantomArgs[0] = "--webdriver-loglevel=" + phantomJSLogLevel;
+			desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, phantomArgs);
+			webDriver = new PhantomJSDriver(desiredCapabilities);
 		}
 		else if ("chrome".equals(NAME)) {
 			webDriver = new ChromeDriver();
 		}
 		else if ("firefox".equals(NAME)) {
 			webDriver = new FirefoxDriver();
+		}
+		else if ("htmlunit".equals(NAME)) {
+			webDriver = new HtmlUnitDriver();
+		}
+		else if ("jbrowser".equals(NAME)) {
+			webDriver = new JBrowserDriver();
 		}
 
 		// Note: Chrome does not maximize even with workarounds.

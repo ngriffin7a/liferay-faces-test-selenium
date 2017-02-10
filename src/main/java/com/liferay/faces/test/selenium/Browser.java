@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.test.selenium;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -29,7 +28,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -38,6 +36,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
@@ -113,7 +113,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 			webDriver = new FirefoxDriver();
 		}
 		else if ("htmlunit".equals(NAME)) {
-			webDriver = new HtmlUnitDriver(BrowserVersion.FIREFOX_45, true);
+			webDriver = new HtmlUnitDriverLiferayFacesImpl(BrowserVersion.FIREFOX_45, true);
 		}
 		else if ("jbrowser".equals(NAME)) {
 			webDriver = new JBrowserDriver();
@@ -251,10 +251,6 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		return webDriver.getTitle();
 	}
 
-	public WebDriver getWebDriver() {
-		return webDriver;
-	}
-
 	@Override
 	public String getWindowHandle() {
 		return webDriver.getWindowHandle();
@@ -263,6 +259,21 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	@Override
 	public Set<String> getWindowHandles() {
 		return webDriver.getWindowHandles();
+	}
+
+	/**
+	 * Load all images on the page. If the browser loads images automatically, this method does nothing.
+	 */
+	public void loadImages() {
+
+		if (NAME.equals("htmlunit")) {
+
+			HtmlUnitDriverLiferayFacesImpl htmlUnitDriverLiferayFacesImpl = (HtmlUnitDriverLiferayFacesImpl) webDriver;
+			htmlUnitDriverLiferayFacesImpl.loadImages();
+		}
+		else {
+			logger.log(Level.WARNING, "Images are loaded automatically for this browser.");
+		}
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2016 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,16 @@ package com.liferay.faces.test.selenium;
 
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
  * @author  Kyle Stiemann
  */
 public final class TestUtil {
+
+	// Logger
+	private static final Logger logger = Logger.getLogger(TestUtil.class.getName());
 
 	// Public Constants
 	public static final String DEFAULT_BASE_URL = "http://" + TestUtil.getHost() + ":" + TestUtil.getPort();
@@ -78,10 +82,29 @@ public final class TestUtil {
 
 	public static Level getLogLevel(String defaultLogLevel) {
 
-		String logLevelString = getSystemPropertyOrDefault("integration.log.level", defaultLogLevel);
-		logLevelString = logLevelString.toUpperCase(Locale.ENGLISH);
+		Level logLevel;
+		String logLevelString = getSystemPropertyOrDefault("integration.log.level", null);
 
-		return Level.parse(logLevelString);
+		if (logLevelString != null) {
+
+			logLevelString = logLevelString.toUpperCase(Locale.ENGLISH);
+
+			try {
+				logLevel = Level.parse(logLevelString);
+			}
+			catch (Exception e) {
+
+				logger.log(Level.WARNING,
+					"\"{0}\" is not a valid log level. Setting log level to the default of \"{1}\".",
+					new String[] { logLevelString, defaultLogLevel });
+				logLevel = Level.parse(defaultLogLevel);
+			}
+		}
+		else {
+			logLevel = Level.parse(defaultLogLevel);
+		}
+
+		return logLevel;
 	}
 
 	public static String getPort() {

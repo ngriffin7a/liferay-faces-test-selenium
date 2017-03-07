@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.test.selenium;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,10 +32,22 @@ public final class TestUtil {
 	// Public Constants
 	public static final String DEFAULT_BASE_URL = "http://" + TestUtil.getHost() + ":" + TestUtil.getPort();
 	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";
+	public static final String JAVA_IO_TMPDIR;
 
 	// /* package-private */ Constants
 	/* package-private */ static final boolean RUNNING_WITH_MAVEN = Boolean.valueOf(TestUtil.getSystemPropertyOrDefault(
 				"RUNNING_WITH_MAVEN", "false"));
+
+	static {
+
+		String javaIOTmpdir = System.getProperty("java.io.tmpdir");
+
+		if (!javaIOTmpdir.endsWith(File.separator)) {
+			javaIOTmpdir += File.separator;
+		}
+
+		JAVA_IO_TMPDIR = javaIOTmpdir;
+	}
 
 	private TestUtil() {
 		throw new AssertionError();

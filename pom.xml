@@ -113,6 +113,7 @@
 								<integration.sign.in.button.xpath>${integration.sign.in.button.xpath}</integration.sign.in.button.xpath>
 								<integration.login>${integration.login}</integration.login>
 								<integration.password>${integration.password}</integration.password>
+								<integration.selenium.output.directory>${project.build.directory}/selenium</integration.selenium.output.directory>
 							</systemPropertyVariables>
 							<properties>
 								<property>

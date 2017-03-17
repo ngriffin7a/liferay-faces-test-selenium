@@ -15,15 +15,25 @@
  */
 package com.liferay.faces.test.selenium;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -133,6 +143,103 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		return instance;
 	}
 
+	/**
+	 * Calls {@link #captureCurrentPageState(java.lang.String, java.lang.String)}. The default output directory is
+	 * <code> {@link TestUtil#JAVA_IO_TMPDIR} + "selenium"</code>. This can be changed with the <code>
+	 * "integration.selenium.output.directory"</code> system property. No file name prefix is used.
+	 *
+	 * @see  {@link #captureCurrentPageState(java.lang.String, java.lang.String)}
+	 */
+	public void captureCurrentPageState() {
+
+		String outputDirectoryPath = TestUtil.getSystemPropertyOrDefault("integration.selenium.output.directory",
+				TestUtil.JAVA_IO_TMPDIR + "selenium");
+		captureCurrentPageState(outputDirectoryPath, null);
+	}
+
+	/**
+	 * Captures the current page markup (using {@link #getCurrentPageMarkup()}) to a file, and if the browser supports
+	 * it, captures a screenshot to a file as well. This method logs the file locations for the benefit of the tester.
+	 *
+	 * @param  outputDirectoryPath  Path where the captured page state should be generated.
+	 * @param  fileNamePrefix       String to prepend to each html (and potentially screenshot) file name.
+	 */
+	public void captureCurrentPageState(String outputDirectoryPath, String fileNamePrefix) {
+
+		File file = new File(outputDirectoryPath);
+		file.mkdirs();
+
+		StringBuilder buf = new StringBuilder();
+		buf.append(outputDirectoryPath);
+		buf.append("/");
+
+		if (fileNamePrefix != null) {
+
+			buf.append(fileNamePrefix);
+			buf.append("_");
+		}
+
+		buf.append(getName());
+		buf.append("_");
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS", Locale.ENGLISH);
+		simpleDateFormat.setTimeZone(TimeZone.getDefault());
+
+		String dateString = simpleDateFormat.format(new Date());
+		buf.append(dateString);
+
+		String fileName = buf.toString();
+		String htmlFileName = fileName + ".html";
+		PrintWriter printWriter = null;
+
+		try {
+
+			printWriter = new PrintWriter(htmlFileName, "UTF-8");
+
+			String currentPageState = getCurrentPageMarkup();
+			printWriter.write(currentPageState);
+		}
+		catch (Exception e) {
+
+			logger.log(Level.SEVERE, "Unable to write page source to {0} due to the following exception:\n",
+				new Object[] { htmlFileName });
+			logger.log(Level.SEVERE, "", e);
+		}
+		finally {
+			close(printWriter);
+		}
+
+		String currentUrl = getCurrentUrl();
+		logger.log(Level.INFO, "The html of url=\"{0}\" has been written to {1}",
+			new Object[] { currentUrl, htmlFileName });
+
+		if (webDriver instanceof TakesScreenshot) {
+
+			TakesScreenshot takesScreenshot = (TakesScreenshot) webDriver;
+			byte[] screenshotBytes = takesScreenshot.getScreenshotAs(OutputType.BYTES);
+			String screenshotFileName = fileName + ".png";
+			FileOutputStream fileOutputStream = null;
+
+			try {
+
+				fileOutputStream = new FileOutputStream(screenshotFileName);
+				fileOutputStream.write(screenshotBytes);
+			}
+			catch (Exception e) {
+
+				logger.log(Level.SEVERE, "Unable to write page source to {0} due to the following exception:\n",
+					new Object[] { screenshotFileName });
+				logger.log(Level.SEVERE, "", e);
+			}
+			finally {
+				close(fileOutputStream);
+			}
+
+			logger.log(Level.INFO, "A screenshot of url=\"{0}\" has been saved to {1}",
+				new Object[] { currentUrl, screenshotFileName });
+		}
+	}
+
 	public void centerElementInView(String xpath) {
 
 		// http://stackoverflow.com/questions/8922107/javascript-scrollintoview-middle-alignment#36499256
@@ -232,6 +339,22 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		webDriver.get(url);
 	}
 
+	/**
+	 * @return  The current HTML of the entire page.
+	 */
+	public String getCurrentPageMarkup() {
+
+		WebElement documentElement = findElementByXpath("/html");
+		String outerHTMLAttrName = "outerHTML";
+
+		// https://github.com/SeleniumHQ/htmlunit-driver/issues/45
+		if ("htmlunit".equals(getName())) {
+			outerHTMLAttrName = "innerHTML";
+		}
+
+		return documentElement.getAttribute(outerHTMLAttrName);
+	}
+
 	@Override
 	public String getCurrentUrl() {
 		return webDriver.getCurrentUrl();
@@ -241,6 +364,10 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		return NAME;
 	}
 
+	/**
+	 * @return  The HTML of the entire page. The returned HTML may not reflect JavaScript modifications. Consider using
+	 *          {@link #getCurrentPageMarkup()} instead if you want the HTML markup after JavaScript has modified it.
+	 */
 	@Override
 	public String getPageSource() {
 		return webDriver.getPageSource();
@@ -364,5 +491,18 @@ public class Browser implements WebDriver, JavascriptExecutor {
 
 	public void waitUntil(ExpectedCondition expectedCondition) {
 		wait.until(expectedCondition);
+	}
+
+	private void close(Closeable closeable) {
+
+		if (closeable != null) {
+
+			try {
+				closeable.close();
+			}
+			catch (IOException e) {
+				// do nothing.
+			}
+		}
 	}
 }

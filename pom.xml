@@ -102,6 +102,7 @@
 							<systemPropertyVariables>
 								<RUNNING_WITH_MAVEN>true</RUNNING_WITH_MAVEN>
 								<integration.browser>${integration.browser}</integration.browser>
+								<integration.browser.headless>${integration.browser.headless}</integration.browser.headless>
 								<integration.browser.wait.time.out>${integration.browser.wait.time.out}</integration.browser.wait.time.out>
 								<integration.log.level>${integration.log.level}</integration.log.level>
 								<integration.container>${integration.container}</integration.container>
@@ -297,34 +298,35 @@
 			<version>2.53.0</version>
 		</dependency>
 		<dependency>
+			<!-- chromedriver version 2.29 is required. -->
+			<!-- Chrome/Chromium 59+ is required for headless testing. -->
+			<!--
+				If Chrome/Chromium 59 is not yet the stable version, Chrome Canary may be used on OSX or Windows.
+				On Linux, Chromium 59 may be used: https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F463157%2Fchrome-linux.zip?generation=1491785193956253&alt=media
+				A non-default Chrome/Chromium binary may be specified like so:
+
+				-Dwebdriver.chrome.bin=/path/to/alternate/chrome/bin
+			-->
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-chrome-driver</artifactId>
 			<version>2.53.0</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<!-- Firefox 46.0 is required. -->
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-firefox-driver</artifactId>
+			<version>2.53.0</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<!-- phantomjs 2.1.1 is required. -->
 			<groupId>com.codeborne</groupId>
 			<artifactId>phantomjsdriver</artifactId>
 			<version>1.3.0</version>
 			<optional>true</optional>
 			<scope>provided</scope>
-			<!-- Don't download the version of selenium that phantomjsdriver depends on since it is older than -->
-			<!-- the version specified above. -->
-			<exclusions>
-				<exclusion>
-					<artifactId>org.seleniumhq.selenium</artifactId>
-					<groupId>selenium-java</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.seleniumhq.selenium</artifactId>
-					<groupId>selenium-server</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.seleniumhq.selenium</artifactId>
-					<groupId>selenium-remote-driver</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>

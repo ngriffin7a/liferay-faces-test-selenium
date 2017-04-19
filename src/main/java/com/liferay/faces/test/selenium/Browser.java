@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
@@ -37,12 +38,14 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -61,6 +64,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	private static final Logger logger = Logger.getLogger(Browser.class.getName());
 
 	// Private Static Variables
+	private static boolean headless;
 	private static Browser instance = null;
 	private static WebDriver webDriver = null;
 	private static WebDriverWait wait = null;
@@ -74,16 +78,59 @@ public class Browser implements WebDriver, JavascriptExecutor {
 
 	private Browser() {
 
-		String defaultBrowser = "phantomjs";
-
-		if (!TestUtil.RUNNING_WITH_MAVEN) {
-			defaultBrowser = "firefox";
-		}
-
-		String name = TestUtil.getSystemPropertyOrDefault("integration.browser", defaultBrowser);
+		String name = TestUtil.getSystemPropertyOrDefault("integration.browser", "chrome");
 		NAME = name.toLowerCase(Locale.ENGLISH);
 
-		if ("phantomjs".equals(NAME)) {
+		if ("chrome".equals(NAME)) {
+
+			ChromeOptions chromeOptions = new ChromeOptions();
+			String chromeBinaryPath = TestUtil.getSystemPropertyOrDefault("webdriver.chrome.bin", null);
+
+			if (chromeBinaryPath != null) {
+
+				chromeOptions.setBinary(chromeBinaryPath);
+				logger.log(Level.INFO, "Chrome Binary: {0}", chromeBinaryPath);
+			}
+
+			chromeOptions.addArguments("start-maximized");
+
+			if (runHeadless(TestUtil.RUNNING_WITH_MAVEN)) {
+
+				headless = true;
+				chromeOptions.addArguments("headless");
+				chromeOptions.addArguments("disable-gpu");
+			}
+
+			webDriver = new ChromeDriver(chromeOptions);
+		}
+		else if ("firefox".equals(NAME)) {
+
+			String firefoxBinaryPath = TestUtil.getSystemPropertyOrDefault("webdriver.firefox.bin", null);
+
+			if (firefoxBinaryPath != null) {
+				logger.log(Level.INFO, "Firefox Binary: {0}", firefoxBinaryPath);
+			}
+
+			if (runHeadless(false)) {
+				logger.log(Level.WARNING, "Firefox cannot run in headless mode.");
+			}
+
+			headless = false;
+			webDriver = new FirefoxDriver();
+		}
+		else if ("phantomjs".equals(NAME)) {
+
+			String phantomJSBinaryPath = TestUtil.getSystemPropertyOrDefault("phantomjs.binary.path", null);
+
+			if (phantomJSBinaryPath != null) {
+				logger.log(Level.INFO, "PhantomJS Binary: {0}", phantomJSBinaryPath);
+			}
+
+			if (!runHeadless(true)) {
+				logger.log(Level.WARNING, "PhantomJS only runs in headless mode.");
+			}
+
+			headless = true;
 
 			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
 
@@ -116,21 +163,29 @@ public class Browser implements WebDriver, JavascriptExecutor {
 			desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, phantomArgs);
 			webDriver = new PhantomJSDriver(desiredCapabilities);
 		}
-		else if ("chrome".equals(NAME)) {
-			webDriver = new ChromeDriver();
-		}
-		else if ("firefox".equals(NAME)) {
-			webDriver = new FirefoxDriver();
-		}
 		else if ("htmlunit".equals(NAME)) {
+
+			if (!runHeadless(true)) {
+				logger.log(Level.WARNING, "HtmlUnit only runs in headless mode.");
+			}
+
+			headless = true;
 			webDriver = new HtmlUnitDriverLiferayFacesImpl(BrowserVersion.FIREFOX_45, true);
 		}
 		else if ("jbrowser".equals(NAME)) {
+
+			if (!runHeadless(true)) {
+				logger.log(Level.WARNING, "JBrowser only runs in headless mode.");
+			}
+
+			headless = true;
 			webDriver = new JBrowserDriver();
 		}
 
-		// Note: Chrome does not maximize even with workarounds.
-		webDriver.manage().window().maximize();
+		if (!"chrome".equals(NAME)) {
+			webDriver.manage().window().maximize();
+		}
+
 		wait = new WebDriverWait(webDriver, TestUtil.getBrowserWaitTimeOut());
 	}
 
@@ -267,6 +322,8 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	}
 
 	public void click(String xpath) {
+
+		centerElementInView(xpath);
 		findElementByXpath(xpath).click();
 	}
 
@@ -280,6 +337,8 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	 * @param  xpath  The xpath of the element to be clicked and rerendered.
 	 */
 	public void clickAndWaitForAjaxRerender(String xpath) {
+
+		centerElementInView(xpath);
 		performAndWaitForAjaxRerender(createClickAction(xpath), xpath);
 	}
 
@@ -297,6 +356,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 
 		Actions actions = createActions();
 		WebElement element = findElementByXpath(xpath);
+		actions.moveToElement(element);
 		actions.click(element);
 
 		return actions.build();
@@ -337,6 +397,13 @@ public class Browser implements WebDriver, JavascriptExecutor {
 
 		logger.log(Level.INFO, "Navigating to: {0}", url);
 		webDriver.get(url);
+	}
+
+	public Capabilities getCapabilities() {
+
+		RemoteWebDriver remoteWebDriver = (RemoteWebDriver) webDriver;
+
+		return remoteWebDriver.getCapabilities();
 	}
 
 	/**
@@ -386,6 +453,10 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	@Override
 	public Set<String> getWindowHandles() {
 		return webDriver.getWindowHandles();
+	}
+
+	public boolean isHeadless() {
+		return headless;
 	}
 
 	/**
@@ -504,5 +575,13 @@ public class Browser implements WebDriver, JavascriptExecutor {
 				// do nothing.
 			}
 		}
+	}
+
+	private boolean runHeadless(boolean runHeadlessDefault) {
+
+		String headlessString = TestUtil.getSystemPropertyOrDefault("integration.browser.headless",
+				Boolean.toString(runHeadlessDefault));
+
+		return Boolean.parseBoolean(headlessString);
 	}
 }

@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.test.selenium.applicant;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -192,6 +191,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		Browser browser = Browser.getInstance();
 		String emailAddressFieldXpath = getEmailAddressFieldXpath();
+		browser.centerElementInView(emailAddressFieldXpath);
 		sendKeysTabAndWaitForAjaxRerender(browser, emailAddressFieldXpath, "test");
 
 		String emailAddressFieldErrorXpath = getFieldErrorXpath(emailAddressFieldXpath);
@@ -227,6 +227,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 	public void runApplicantPortletTest_F_AutoPopulateCityState() {
 
 		Browser browser = Browser.getInstance();
+		browser.centerElementInView(getPostalCodeFieldXpath());
 		sendKeysTabAndWaitForAjaxRerender(browser, getPostalCodeFieldXpath(), "32801");
 		SeleniumAssert.assertElementValue(browser, getCityFieldXpath(), "Orlando");
 		SeleniumAssert.assertElementValue(browser, getProvinceIdFieldXpath(), "3");
@@ -251,8 +252,8 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		Browser browser = Browser.getInstance();
 		String dateOfBirthFieldXpath = getDateOfBirthFieldXpath();
-		browser.clear(dateOfBirthFieldXpath);
 		browser.centerElementInView(dateOfBirthFieldXpath);
+		browser.clear(dateOfBirthFieldXpath);
 		sendKeysTabAndWaitForAjaxRerender(browser, dateOfBirthFieldXpath, "12/34/5678");
 
 		String dateOfBirthFieldErrorXpath = getFieldErrorXpath(dateOfBirthFieldXpath);
@@ -308,6 +309,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String genesis11 =
 			"Indeed the people are one and they all have one language, and this is what they begin to do ...";
 		browser.sendKeys(getCommentsXpath(), genesis11);
+		browser.waitForElementNotPresent(getFieldErrorXpath("//*"));
 		browser.click(getSubmitButtonXpath());
 		browser.waitForElementVisible(getSubmitAnotherApplicationButton());
 		SeleniumAssert.assertElementTextVisible(browser, getConfimationFormXpath(), "Dear David,");

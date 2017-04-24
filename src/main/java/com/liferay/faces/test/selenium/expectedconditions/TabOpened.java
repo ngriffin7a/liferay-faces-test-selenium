@@ -15,7 +15,8 @@
  */
 package com.liferay.faces.test.selenium.expectedconditions;
 
-import org.openqa.selenium.JavascriptExecutor;
+import java.util.Set;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
@@ -23,14 +24,21 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 /**
  * @author  Kyle Stiemann
  */
-public class PageLoaded implements ExpectedCondition<Boolean> {
+public class TabOpened implements ExpectedCondition<Boolean> {
+
+	// Private Data Members
+	private int initialNumberOfTabs;
+
+	public TabOpened(int initialNumberOfTabs) {
+		this.initialNumberOfTabs = initialNumberOfTabs;
+	}
 
 	@Override
 	public Boolean apply(WebDriver webDriver) {
 
-		JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
-		String readyState = (String) javascriptExecutor.executeScript("return document.readyState");
+		Set<String> windowHandles = webDriver.getWindowHandles();
+		int numberOfTabs = windowHandles.size();
 
-		return "complete".equals(readyState);
+		return (initialNumberOfTabs + 1) == numberOfTabs;
 	}
 }

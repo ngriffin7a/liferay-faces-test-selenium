@@ -177,12 +177,12 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		String lastNameFieldXpath = getLastNameFieldXpath();
 		Action lastNameFieldClick = browser.createClickAction(lastNameFieldXpath);
-		browser.performAndWaitForAjaxRerender(lastNameFieldClick, firstNameFieldXpath);
+		browser.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
 
 		String firstNameFieldErrorXpath = getFieldErrorXpath(firstNameFieldXpath);
 		SeleniumAssert.assertElementNotPresent(browser, firstNameFieldErrorXpath);
 		browser.clear(firstNameFieldXpath);
-		browser.performAndWaitForAjaxRerender(lastNameFieldClick, firstNameFieldXpath);
+		browser.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
 		SeleniumAssert.assertElementTextVisible(browser, firstNameFieldErrorXpath, "Value is required");
 	}
 
@@ -192,11 +192,11 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		Browser browser = Browser.getInstance();
 		String emailAddressFieldXpath = getEmailAddressFieldXpath();
 		browser.centerElementInView(emailAddressFieldXpath);
-		sendKeysTabAndWaitForAjaxRerender(browser, emailAddressFieldXpath, "test");
+		sendKeysTabAndWaitForRerender(browser, emailAddressFieldXpath, "test");
 
 		String emailAddressFieldErrorXpath = getFieldErrorXpath(emailAddressFieldXpath);
 		SeleniumAssert.assertElementTextVisible(browser, emailAddressFieldErrorXpath, "Invalid e-mail address");
-		sendKeysTabAndWaitForAjaxRerender(browser, emailAddressFieldXpath, "@liferay.com");
+		sendKeysTabAndWaitForRerender(browser, emailAddressFieldXpath, "@liferay.com");
 		SeleniumAssert.assertElementNotPresent(browser, emailAddressFieldErrorXpath);
 	}
 
@@ -205,7 +205,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		Browser browser = Browser.getInstance();
 		clearAllFields(browser);
-		browser.clickAndWaitForAjaxRerender(getSubmitButtonXpath());
+		browser.clickAndWaitForRerender(getSubmitButtonXpath());
 		SeleniumAssert.assertElementTextVisible(browser, getFieldErrorXpath(getFirstNameFieldXpath()),
 			"Value is required");
 		SeleniumAssert.assertElementTextVisible(browser, getFieldErrorXpath(getLastNameFieldXpath()),
@@ -228,7 +228,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		Browser browser = Browser.getInstance();
 		browser.centerElementInView(getPostalCodeFieldXpath());
-		sendKeysTabAndWaitForAjaxRerender(browser, getPostalCodeFieldXpath(), "32801");
+		sendKeysTabAndWaitForRerender(browser, getPostalCodeFieldXpath(), "32801");
 		SeleniumAssert.assertElementValue(browser, getCityFieldXpath(), "Orlando");
 		SeleniumAssert.assertElementValue(browser, getProvinceIdFieldXpath(), "3");
 	}
@@ -238,12 +238,12 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		Browser browser = Browser.getInstance();
 		String showHideCommentsLinkXpath = getShowHideCommentsLinkXpath();
-		browser.clickAndWaitForAjaxRerender(showHideCommentsLinkXpath);
+		browser.clickAndWaitForRerender(showHideCommentsLinkXpath);
 
 		String commentsXpath = getCommentsXpath();
 		browser.sendKeys(commentsXpath, "testing 1, 2, 3");
-		browser.clickAndWaitForAjaxRerender(showHideCommentsLinkXpath);
-		browser.clickAndWaitForAjaxRerender(showHideCommentsLinkXpath);
+		browser.clickAndWaitForRerender(showHideCommentsLinkXpath);
+		browser.clickAndWaitForRerender(showHideCommentsLinkXpath);
 		SeleniumAssert.assertElementTextVisible(browser, commentsXpath, "testing 1, 2, 3");
 	}
 
@@ -254,12 +254,12 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String dateOfBirthFieldXpath = getDateOfBirthFieldXpath();
 		browser.centerElementInView(dateOfBirthFieldXpath);
 		browser.clear(dateOfBirthFieldXpath);
-		sendKeysTabAndWaitForAjaxRerender(browser, dateOfBirthFieldXpath, "12/34/5678");
+		sendKeysTabAndWaitForRerender(browser, dateOfBirthFieldXpath, "12/34/5678");
 
 		String dateOfBirthFieldErrorXpath = getFieldErrorXpath(dateOfBirthFieldXpath);
 		SeleniumAssert.assertElementTextVisible(browser, dateOfBirthFieldErrorXpath, "Invalid date format");
 		browser.clear(dateOfBirthFieldXpath);
-		sendKeysTabAndWaitForAjaxRerender(browser, dateOfBirthFieldXpath, "01/02/3456");
+		sendKeysTabAndWaitForRerender(browser, dateOfBirthFieldXpath, "01/02/3456");
 		SeleniumAssert.assertElementNotPresent(browser, dateOfBirthFieldErrorXpath);
 	}
 
@@ -458,13 +458,13 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		createSelect(browser, getProvinceIdFieldXpath()).selectByVisibleText("FL");
 	}
 
-	protected final void sendKeysTabAndWaitForAjaxRerender(Browser browser, String xpath, CharSequence... keys) {
+	protected final void sendKeysTabAndWaitForRerender(Browser browser, String xpath, CharSequence... keys) {
 
 		Actions actions = browser.createActions();
 		WebElement element = browser.findElementByXpath(xpath);
 		actions.sendKeys(element, keys);
 		actions.sendKeys(Keys.TAB);
-		browser.performAndWaitForAjaxRerender(actions.build(), xpath);
+		browser.performAndWaitForRerender(actions.build(), xpath);
 	}
 
 	protected void submitFile(Browser browser) {

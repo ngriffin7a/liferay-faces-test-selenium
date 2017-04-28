@@ -328,18 +328,18 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	}
 
 	/**
-	 * Clicks on the element specified via xpath and waits for the clicked element to be rerendered via Ajax. This
-	 * method will only work if the element clicked is also rerendered via Ajax. If the clicked element will not be
-	 * rerendered via Ajax, then use {@link
-	 * Browser#performAndWaitForAjaxRerender(org.openqa.selenium.interactions.Action, java.lang.String)} with {@link
+	 * Clicks on the element specified via xpath and waits for the clicked element to be rerendered (for example via
+	 * Ajax or full page reload). This method will only work if the element clicked is also rerendered. If the clicked
+	 * element will not be rerendered, then use {@link
+	 * Browser#performAndWaitForRerender(org.openqa.selenium.interactions.Action, java.lang.String)} with {@link
 	 * Browser#createClickAction(java.lang.String)} and the xpath of an element which will be rerendered instead.
 	 *
 	 * @param  xpath  The xpath of the element to be clicked and rerendered.
 	 */
-	public void clickAndWaitForAjaxRerender(String xpath) {
+	public void clickAndWaitForRerender(String xpath) {
 
 		centerElementInView(xpath);
-		performAndWaitForAjaxRerender(createClickAction(xpath), xpath);
+		performAndWaitForRerender(createClickAction(xpath), xpath);
 	}
 
 	@Override
@@ -485,12 +485,13 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	}
 
 	/**
-	 * Performs an {@link Action} and waits for an element to be rerendered via Ajax.
+	 * Performs an {@link Action} and waits for an element to be rerendered (for example via Ajax or a full page
+	 * reload).
 	 *
-	 * @param  action         The action which will cause the Ajax rerender.
+	 * @param  action         The action which will cause the rerender.
 	 * @param  rerenderXpath  The xpath of the element which will be rerendered.
 	 */
-	public void performAndWaitForAjaxRerender(Action action, String rerenderXpath) {
+	public void performAndWaitForRerender(Action action, String rerenderXpath) {
 
 		WebElement rerenderElement = findElementByXpath(rerenderXpath);
 		action.perform();

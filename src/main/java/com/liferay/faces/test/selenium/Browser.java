@@ -203,7 +203,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	 * <code> {@link TestUtil#JAVA_IO_TMPDIR} + "selenium"</code>. This can be changed with the <code>
 	 * "integration.selenium.output.directory"</code> system property. No file name prefix is used.
 	 *
-	 * @see  {@link #captureCurrentPageState(java.lang.String, java.lang.String)}
+	 * @see  #captureCurrentPageState(java.lang.String,java.lang.String)
 	 */
 	public void captureCurrentPageState() {
 

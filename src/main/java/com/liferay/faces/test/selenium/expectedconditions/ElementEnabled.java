@@ -15,25 +15,42 @@
  */
 package com.liferay.faces.test.selenium.expectedconditions;
 
-import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 
 /**
- * @author      Kyle Stiemann
- * @deprecated  This class is unnecessary since selenium normally attempts to wait for pages to load. See {@link
- *              WebDriver} and {@link WebDriver#get(java.lang.String)} for more details.
+ * @author  Kyle Stiemann
  */
-@Deprecated
-public class PageLoaded implements ExpectedCondition<Boolean> {
+public class ElementEnabled implements ExpectedCondition<WebElement> {
+
+	// Private Data Members
+	private String elementXpath;
+
+	public ElementEnabled(String elementXpath) {
+		this.elementXpath = elementXpath;
+	}
 
 	@Override
-	public Boolean apply(WebDriver webDriver) {
+	public WebElement apply(WebDriver webDriver) {
 
-		JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
-		String readyState = (String) javascriptExecutor.executeScript("return document.readyState");
+		WebElement webElement;
 
-		return "complete".equals(readyState);
+		try {
+
+			webElement = webDriver.findElement(By.xpath(elementXpath));
+
+			if (!webElement.isEnabled()) {
+				webElement = null;
+			}
+		}
+		catch (StaleElementReferenceException e) {
+			webElement = null;
+		}
+
+		return webElement;
 	}
 }

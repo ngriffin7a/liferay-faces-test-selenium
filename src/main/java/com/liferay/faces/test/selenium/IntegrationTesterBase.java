@@ -118,7 +118,7 @@ public abstract class IntegrationTesterBase {
 		String passwordXpath, String password, String signInButtonXpath) {
 
 		browser.get(signInURL);
-		browser.waitForElementVisible(loginXpath);
+		browser.waitForElementEnabled(loginXpath);
 		browser.clear(loginXpath);
 		browser.sendKeys(loginXpath, login);
 		browser.clear(passwordXpath);

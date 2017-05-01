@@ -15,17 +15,16 @@
  */
 package com.liferay.faces.test.selenium.assertion;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Assert;
-
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.liferay.faces.test.selenium.Browser;
 import com.liferay.faces.test.selenium.TestUtil;
+import com.liferay.faces.test.selenium.expectedconditions.ElementEnabled;
+import com.liferay.faces.test.selenium.expectedconditions.internal.ExpectedConditionsUtil;
 
 
 /**
@@ -33,107 +32,257 @@ import com.liferay.faces.test.selenium.TestUtil;
  */
 public final class SeleniumAssert {
 
-	// Logger
-	private static final Logger logger = Logger.getLogger(SeleniumAssert.class.getName());
-
-	static {
-		logger.setLevel(TestUtil.getLogLevel());
-	}
-
-	public static void assertElementNotPresent(Browser browser, String xpath) {
-
-		WebElement element = findFirstElementByXpath(browser, xpath);
-		Assert.assertNull("Element " + xpath + " is present in the DOM.", element);
-	}
-
-	public static void assertElementPresent(Browser browser, String xpath) {
-
-		WebElement element = findFirstElementByXpath(browser, xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-	}
-
-	public static void assertElementTextInvisible(Browser browser, String xpath, String text) {
-
-		WebElement element = findFirstElementByXpath(browser, xpath);
-
-		boolean elementDisplayed = false;
-		String elementText = "";
-
-		if (element != null) {
-
-			elementDisplayed = element.isDisplayed();
-			elementText = element.getText();
-		}
-
-		Assert.assertTrue("Element " + xpath + " text \"" + elementText +
-			"\" is visible. Instead it should be invisible.",
-			((element == null) || !elementDisplayed || !elementText.contains(text)));
-	}
-
-	public static void assertElementTextVisible(Browser browser, String xpath, String text) {
-
-		WebElement element = findFirstElementByXpath(browser, xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-
-		boolean elementDisplayed = element.isDisplayed();
-		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
-
-		String elementText = element.getText();
-		Assert.assertTrue("Element " + xpath + " does not contain text \"" + text + "\". Instead it contains text \"" +
-			elementText + "\".", elementText.contains(text));
-	}
-
-	public static void assertElementValue(Browser browser, String xpath, String value) {
-		assertElementValue(browser, xpath, value, true);
-	}
-
-	public static void assertElementValue(Browser browser, String xpath, String value, boolean elementMustBeVisible) {
-
-		WebElement element = findFirstElementByXpath(browser, xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-
-		if (elementMustBeVisible) {
-
-			boolean elementDisplayed = element.isDisplayed();
-			Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
-		}
-
-		String elementValue = element.getAttribute("value");
-		Assert.assertEquals("Element " + xpath + " does not contain the value \"" + value +
-			"\". Instead it contains the value \"" + elementValue + "\".", value, elementValue);
-	}
-
-	public static void assertElementVisible(Browser browser, String xpath) {
-
-		WebElement element = findFirstElementByXpath(browser, xpath);
-		Assert.assertNotNull("Element " + xpath + " is not present in the DOM.", element);
-
-		boolean elementDisplayed = element.isDisplayed();
-		Assert.assertTrue("Element " + xpath + " is not displayed.", elementDisplayed);
-	}
-
-	public static void assertLibraryVisible(Browser browser, String libraryName) {
-
-		String libraryVersionXpath = "//li[contains(.,'" + libraryName + "')]";
-		WebElement libraryVersionElement = browser.findElementByXpath(libraryVersionXpath);
-		logger.log(Level.INFO, libraryVersionElement.getText());
-		SeleniumAssert.assertElementVisible(browser, libraryVersionXpath);
+	/**
+	 * Asserts that an element is not present on the page. This method will wait for the amount of time specified by
+	 * {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing the assertion.
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  elementXpath  The xpath of the element.
+	 */
+	public static void assertElementNotPresent(Browser browser, String elementXpath) {
+		assertFalse(browser, ExpectedConditions.presenceOfElementLocated(By.xpath(elementXpath)));
 	}
 
 	/**
-	 * Returns the first element matching the xpath or null if no element is found. This method may be used in place of
-	 * {@link Browser#findElementByXpath(java.lang.String)} which throws an error when an element is not found instead
-	 * of returning null.
+	 * Asserts that an element is not visible (see {@link
+	 * ExpectedConditions#invisibilityOfElementLocated(org.openqa.selenium.By)} for more details). This method will wait
+	 * for the amount of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link
+	 * Browser#setWaitTimeOut()}) before failing the assertion.
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  elementXpath  The xpath of the element.
 	 */
-	private static WebElement findFirstElementByXpath(Browser browser, String xpath) {
+	public static void assertElementNotVisible(Browser browser, String elementXpath) {
+		assertTrue(browser, ExpectedConditions.invisibilityOfElementLocated(By.xpath(elementXpath)));
+	}
 
-		WebElement element = null;
-		List<WebElement> elements = browser.findElements(By.xpath(xpath));
+	/**
+	 * Asserts that an element is present on the page. This method will wait for the amount of time specified by {@link
+	 * TestUtil#getBrowserWaitTimeOut()} before failing the assertion.
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  elementXpath  The xpath of the element.
+	 */
+	public static void assertElementPresent(Browser browser, String elementXpath) {
+		assertTrue(browser, ExpectedConditions.presenceOfElementLocated(By.xpath(elementXpath)));
+	}
 
-		if (!elements.isEmpty()) {
-			element = elements.get(0);
+	/**
+	 * Asserts that an element is visible (see {@link
+	 * ExpectedConditions#visibilityOfElementLocated(org.openqa.selenium.By)} for more details).
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  elementXpath  The xpath of the element.
+	 */
+	public static void assertElementVisible(Browser browser, String elementXpath) {
+		assertTrue(browser, ExpectedConditions.visibilityOfElementLocated(By.xpath(elementXpath)));
+	}
+
+	/**
+	 * Assert that some expected condition is not satisfied within a browser. This method will wait for the amount of
+	 * time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing
+	 * the assertion.
+	 *
+	 * @param  browser            The currently running browser in which the assertion will be checked.
+	 * @param  expectedCondition  The expected condition of the browser.
+	 */
+	public static void assertFalse(Browser browser, ExpectedCondition expectedCondition) {
+
+		try {
+			browser.waitUntil(ExpectedConditions.not(expectedCondition));
 		}
+		catch (TimeoutException e) {
+			throw createAssertionErrorWithoutExtraInfo(e);
+		}
+	}
 
-		return element;
+	/**
+	 * Asserts that an element does not contain text and is visible. This method will wait for the amount of time
+	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing the
+	 * assertion.
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  text          The text contents.
+	 * @param  elementXpath  The xpath of the element.
+	 *
+	 * @see    #assertTextNotPresentInElement(com.liferay.faces.test.selenium.Browser, java.lang.String,
+	 *         java.lang.String, boolean)
+	 */
+	public static void assertTextNotPresentInElement(Browser browser, String text, String elementXpath) {
+		assertTextNotPresentInElement(browser, text, elementXpath, true);
+	}
+
+	/**
+	 * Asserts that an element does not contain text and potentially is visible. This method will wait for the amount of
+	 * time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing
+	 * the assertion.
+	 *
+	 * @param  browser               The currently running browser in which the assertion will be checked.
+	 * @param  text                  The text contents.
+	 * @param  elementXpath          The xpath of the element.
+	 * @param  elementMustBeVisible  If true, assert that this element must also be visible.
+	 */
+	public static void assertTextNotPresentInElement(Browser browser, String text, String elementXpath,
+		boolean elementMustBeVisible) {
+
+		By byXpath = By.xpath(elementXpath);
+		ExpectedCondition<?> expectedCondition = ExpectedConditions.not(ExpectedConditions
+				.textToBePresentInElementLocated(byXpath, text));
+		expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(expectedCondition,
+				elementMustBeVisible, byXpath);
+		assertTrue(browser, expectedCondition);
+	}
+
+	/**
+	 * Asserts that an element contains text and is visible. This method will wait for the amount of time specified by
+	 * {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing the assertion.
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  text          The text contents.
+	 * @param  elementXpath  The xpath of the element.
+	 *
+	 * @see    #assertTextPresentInElement(com.liferay.faces.test.selenium.Browser, java.lang.String, java.lang.String,
+	 *         boolean)
+	 */
+	public static void assertTextPresentInElement(Browser browser, String text, String elementXpath) {
+		assertTextPresentInElement(browser, text, elementXpath, true);
+	}
+
+	/**
+	 * Asserts that an element contains text and potentially is visible. This method will wait for the amount of time
+	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing the
+	 * assertion.
+	 *
+	 * @param  browser               The currently running browser in which the assertion will be checked.
+	 * @param  text                  The text contents.
+	 * @param  elementXpath          The xpath of the element.
+	 * @param  elementMustBeVisible  If true, assert that this element must also be visible.
+	 */
+	public static void assertTextPresentInElement(Browser browser, String text, String elementXpath,
+		boolean elementMustBeVisible) {
+
+		By byXpath = By.xpath(elementXpath);
+		ExpectedCondition<?> expectedCondition = ExpectedConditions.textToBePresentInElementLocated(byXpath, text);
+		expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(expectedCondition,
+				elementMustBeVisible, byXpath);
+		assertTrue(browser, expectedCondition);
+	}
+
+	/**
+	 * Asserts that an element's value contains text and is visible. This method will wait for the amount of time
+	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing the
+	 * assertion.
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  text          The text contents.
+	 * @param  elementXpath  The xpath of the element.
+	 *
+	 * @see    #assertTextPresentInElementValue(com.liferay.faces.test.selenium.Browser, java.lang.String,
+	 *         java.lang.String, boolean)
+	 */
+	public static void assertTextPresentInElementValue(Browser browser, String text, String elementXpath) {
+		assertTextPresentInElementValue(browser, text, elementXpath, true);
+	}
+
+	/**
+	 * Asserts that an element's value contains text and potentially is visible. This method will wait for the amount of
+	 * time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing
+	 * the assertion.
+	 *
+	 * @param  browser               The currently running browser in which the assertion will be checked.
+	 * @param  text                  The text contents.
+	 * @param  elementXpath          The xpath of the element.
+	 * @param  elementMustBeVisible  If true, assert that this element must also be visible.
+	 */
+	public static void assertTextPresentInElementValue(Browser browser, String text, String elementXpath,
+		boolean elementMustBeVisible) {
+
+		By byXpath = By.xpath(elementXpath);
+		ExpectedCondition<?> expectedCondition = ExpectedConditions.textToBePresentInElementValue(byXpath, text);
+		expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(expectedCondition,
+				elementMustBeVisible, byXpath);
+		assertTrue(browser, expectedCondition);
+	}
+
+	/**
+	 * Assert that some expected condition is satisfied within a browser. This method will wait for the amount of time
+	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link Browser#setWaitTimeOut()}) before failing the
+	 * assertion.
+	 *
+	 * @param  browser            The currently running browser in which the assertion will be checked.
+	 * @param  expectedCondition  The expected condition of the browser.
+	 */
+	public static void assertTrue(Browser browser, ExpectedCondition expectedCondition) {
+
+		try {
+			browser.waitUntil(expectedCondition);
+		}
+		catch (final TimeoutException e) {
+			throw createAssertionErrorWithoutExtraInfo(e);
+		}
+	}
+
+	private static AssertionError createAssertionErrorWithoutExtraInfo(final TimeoutException timeoutException) {
+
+		return new AssertionError(timeoutException) {
+
+				@Override
+				public String getMessage() {
+
+					String message = super.getMessage();
+					String additionalInformation = timeoutException.getAdditionalInformation();
+
+					if (additionalInformation != null) {
+						message = message.replace(additionalInformation, "");
+					}
+
+					String buildInformation = timeoutException.getBuildInformation().toString();
+
+					if (buildInformation != null) {
+						message = message.replace(buildInformation, "");
+					}
+
+					String systemInformation = timeoutException.getSystemInformation();
+
+					if (systemInformation != null) {
+						message = message.replace(systemInformation, "");
+					}
+
+					message = message.replaceFirst("\n+$", "").replaceAll("\n+", "\n");
+
+					return message;
+				}
+			};
+	}
+
+	/**
+	 * Asserts that an element is enabled (see {@link WebElement#isEnabled()} for more details) and visible. This method
+	 * will wait for the amount of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link
+	 * Browser#setWaitTimeOut()}) before failing the assertion.
+	 *
+	 * @param  browser       The currently running browser in which the assertion will be checked.
+	 * @param  elementXpath  The xpath of the element.
+	 *
+	 * @see    #assertElementEnabled(com.liferay.faces.test.selenium.Browser, java.lang.String, boolean)
+	 */
+	public void assertElementEnabled(Browser browser, String elementXpath) {
+		assertElementEnabled(browser, elementXpath, true);
+	}
+
+	/**
+	 * Asserts that an element is enabled (see {@link WebElement#isEnabled()} for more details) and potentially visible.
+	 * This method will wait for the amount of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link
+	 * Browser#setWaitTimeOut()}) before failing the assertion.
+	 *
+	 * @param  browser               The currently running browser in which the assertion will be checked.
+	 * @param  elementXpath          The xpath of the element.
+	 * @param  elementMustBeVisible  If true, assert that this element must also be visible.
+	 */
+	public void assertElementEnabled(Browser browser, String elementXpath, boolean elementMustBeVisible) {
+
+		By byXpath = By.xpath(elementXpath);
+		ExpectedCondition<?> expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(
+				new ElementEnabled(elementXpath), elementMustBeVisible, byXpath);
+		assertTrue(browser, expectedCondition);
 	}
 }

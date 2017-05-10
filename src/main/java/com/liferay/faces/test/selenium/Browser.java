@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
@@ -54,6 +52,8 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 
 import com.liferay.faces.test.selenium.expectedconditions.ElementEnabled;
 import com.liferay.faces.test.selenium.expectedconditions.internal.ExpectedConditionsUtil;
+import com.liferay.faces.util.logging.Logger;
+import com.liferay.faces.util.logging.LoggerFactory;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
@@ -64,17 +64,13 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 public class Browser implements WebDriver, JavascriptExecutor {
 
 	// Logger
-	private static final Logger logger = Logger.getLogger(Browser.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(Browser.class);
 
 	// Private Static Variables
 	private static boolean headless;
 	private static Browser instance = null;
 	private static WebDriver webDriver = null;
 	private static WebDriverWait wait = null;
-
-	static {
-		logger.setLevel(TestUtil.getLogLevel());
-	}
 
 	// Private Constants
 	private final String NAME;
@@ -92,7 +88,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 			if (chromeBinaryPath != null) {
 
 				chromeOptions.setBinary(chromeBinaryPath);
-				logger.log(Level.INFO, "Chrome Binary: {0}", chromeBinaryPath);
+				logger.info("Chrome Binary: {0}", chromeBinaryPath);
 			}
 
 			chromeOptions.addArguments("start-maximized");
@@ -111,11 +107,11 @@ public class Browser implements WebDriver, JavascriptExecutor {
 			String firefoxBinaryPath = TestUtil.getSystemPropertyOrDefault("webdriver.firefox.bin", null);
 
 			if (firefoxBinaryPath != null) {
-				logger.log(Level.INFO, "Firefox Binary: {0}", firefoxBinaryPath);
+				logger.info("Firefox Binary: {0}", firefoxBinaryPath);
 			}
 
 			if (runHeadless(false)) {
-				logger.log(Level.WARNING, "Firefox cannot run in headless mode.");
+				logger.warn("Firefox cannot run in headless mode.");
 			}
 
 			headless = false;
@@ -126,11 +122,11 @@ public class Browser implements WebDriver, JavascriptExecutor {
 			String phantomJSBinaryPath = TestUtil.getSystemPropertyOrDefault("phantomjs.binary.path", null);
 
 			if (phantomJSBinaryPath != null) {
-				logger.log(Level.INFO, "PhantomJS Binary: {0}", phantomJSBinaryPath);
+				logger.info("PhantomJS Binary: {0}", phantomJSBinaryPath);
 			}
 
 			if (!runHeadless(true)) {
-				logger.log(Level.WARNING, "PhantomJS only runs in headless mode.");
+				logger.warn("PhantomJS only runs in headless mode.");
 			}
 
 			headless = true;
@@ -143,22 +139,20 @@ public class Browser implements WebDriver, JavascriptExecutor {
 
 			String phantomJSLogLevel;
 
-			Level logLevel = TestUtil.getLogLevel();
-
-			if (logLevel.intValue() == Level.OFF.intValue()) {
-				phantomJSLogLevel = "NONE";
+			if (logger.isDebugEnabled()) {
+				phantomJSLogLevel = "DEBUG";
 			}
-			else if (logLevel.intValue() > Level.WARNING.intValue()) {
-				phantomJSLogLevel = "ERROR";
-			}
-			else if (logLevel.intValue() > Level.INFO.intValue()) {
-				phantomJSLogLevel = "WARN";
-			}
-			else if (logLevel.intValue() > Level.CONFIG.intValue()) {
+			else if (logger.isInfoEnabled()) {
 				phantomJSLogLevel = "INFO";
 			}
-			else { // if (logLevel.intValue() <= Level.CONFIG.intValue())
-				phantomJSLogLevel = "DEBUG";
+			else if (logger.isWarnEnabled()) {
+				phantomJSLogLevel = "WARN";
+			}
+			else if (logger.isErrorEnabled()) {
+				phantomJSLogLevel = "ERROR";
+			}
+			else {
+				phantomJSLogLevel = "NONE";
 			}
 
 			String[] phantomArgs = new String[1];
@@ -169,7 +163,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		else if ("htmlunit".equals(NAME)) {
 
 			if (!runHeadless(true)) {
-				logger.log(Level.WARNING, "HtmlUnit only runs in headless mode.");
+				logger.warn("HtmlUnit only runs in headless mode.");
 			}
 
 			headless = true;
@@ -178,7 +172,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		else if ("jbrowser".equals(NAME)) {
 
 			if (!runHeadless(true)) {
-				logger.log(Level.WARNING, "JBrowser only runs in headless mode.");
+				logger.warn("JBrowser only runs in headless mode.");
 			}
 
 			headless = true;
@@ -259,17 +253,15 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		}
 		catch (Exception e) {
 
-			logger.log(Level.SEVERE, "Unable to write page source to {0} due to the following exception:\n",
-				new Object[] { htmlFileName });
-			logger.log(Level.SEVERE, "", e);
+			logger.error("Unable to write page source to {0} due to the following exception:\n", htmlFileName);
+			logger.error(e);
 		}
 		finally {
 			close(printWriter);
 		}
 
 		String currentUrl = getCurrentUrl();
-		logger.log(Level.INFO, "The html of url=\"{0}\" has been written to {1}",
-			new Object[] { currentUrl, htmlFileName });
+		logger.info("The html of url=\"{0}\" has been written to {1}", currentUrl, htmlFileName);
 
 		if (webDriver instanceof TakesScreenshot) {
 
@@ -285,16 +277,15 @@ public class Browser implements WebDriver, JavascriptExecutor {
 			}
 			catch (Exception e) {
 
-				logger.log(Level.SEVERE, "Unable to write page source to {0} due to the following exception:\n",
-					new Object[] { screenshotFileName });
-				logger.log(Level.SEVERE, "", e);
+				logger.error("Unable to write page source to {0} due to the following exception:\n",
+					screenshotFileName);
+				logger.error("", e);
 			}
 			finally {
 				close(fileOutputStream);
 			}
 
-			logger.log(Level.INFO, "A screenshot of url=\"{0}\" has been saved to {1}",
-				new Object[] { currentUrl, screenshotFileName });
+			logger.info("A screenshot of url=\"{0}\" has been saved to {1}", currentUrl, screenshotFileName);
 		}
 	}
 
@@ -397,7 +388,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	@Override
 	public void get(String url) {
 
-		logger.log(Level.INFO, "Navigating to: {0}", url);
+		logger.info("Navigating to: {0}", url);
 		webDriver.get(url);
 	}
 
@@ -472,7 +463,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 			htmlUnitDriverLiferayFacesImpl.loadImages();
 		}
 		else {
-			logger.log(Level.WARNING, "Images are loaded automatically for this browser.");
+			logger.warn("Images are loaded automatically for this browser.");
 		}
 	}
 
@@ -497,9 +488,9 @@ public class Browser implements WebDriver, JavascriptExecutor {
 
 		WebElement rerenderElement = findElementByXpath(rerenderXpath);
 		action.perform();
-		logger.log(Level.INFO, "Waiting for element {0} to be stale.", rerenderXpath);
+		logger.info("Waiting for element {0} to be stale.", rerenderXpath);
 		waitUntil(ExpectedConditions.stalenessOf(rerenderElement));
-		logger.log(Level.INFO, "Element {0} is stale.", rerenderXpath);
+		logger.info("Element {0} is stale.", rerenderXpath);
 		waitForElementVisible(rerenderXpath);
 	}
 
@@ -540,13 +531,13 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	 */
 	public void waitForElementEnabled(String elementXpath, boolean elementMustBeVisible) {
 
-		logger.log(Level.INFO, "Waiting for element {0} to be enabled.", elementXpath);
+		logger.info("Waiting for element {0} to be enabled.", elementXpath);
 
 		By byXpath = By.xpath(elementXpath);
 		ExpectedCondition<?> expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(
 				new ElementEnabled(elementXpath), elementMustBeVisible, byXpath);
 		waitUntil(expectedCondition);
-		logger.log(Level.INFO, "Element {0} is enabled.", elementXpath);
+		logger.info("Element {0} is enabled.", elementXpath);
 	}
 
 	/**
@@ -557,9 +548,9 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	 */
 	public void waitForElementNotVisible(String elementXpath) {
 
-		logger.log(Level.INFO, "Waiting for element {0} not to be visible.", elementXpath);
+		logger.info("Waiting for element {0} not to be visible.", elementXpath);
 		waitUntil(ExpectedConditions.invisibilityOfElementLocated(By.xpath(elementXpath)));
-		logger.log(Level.INFO, "Element {0} is not visible.", elementXpath);
+		logger.info("Element {0} is not visible.", elementXpath);
 	}
 
 	/**
@@ -570,9 +561,9 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	 */
 	public void waitForElementVisible(String elementXpath) {
 
-		logger.log(Level.INFO, "Waiting for element {0} to be visible.", elementXpath);
+		logger.info("Waiting for element {0} to be visible.", elementXpath);
 		waitUntil(ExpectedConditions.visibilityOfElementLocated(By.xpath(elementXpath)));
-		logger.log(Level.INFO, "Element {0} is visible.", elementXpath);
+		logger.info("Element {0} is visible.", elementXpath);
 	}
 
 	/**
@@ -596,15 +587,14 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	 */
 	public void waitForTextPresentInElement(String text, String elementXpath, boolean elementMustBeVisible) {
 
-		String[] loggerArgs = new String[] { text, elementXpath };
-		logger.log(Level.INFO, "Waiting for text \"{0}\" to be present in element {1}.", loggerArgs);
+		logger.info("Waiting for text \"{0}\" to be present in element {1}.", text, elementXpath);
 
 		By byXpath = By.xpath(elementXpath);
 		ExpectedCondition<?> expectedCondition = ExpectedConditions.textToBePresentInElementLocated(byXpath, text);
 		expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(expectedCondition,
 				elementMustBeVisible, byXpath);
 		waitUntil(expectedCondition);
-		logger.log(Level.INFO, "Text \"{0}\" is present in Element {1}.", loggerArgs);
+		logger.info("Text \"{0}\" is present in Element {1}.", text, elementXpath);
 	}
 
 	public void waitUntil(ExpectedCondition expectedCondition) {

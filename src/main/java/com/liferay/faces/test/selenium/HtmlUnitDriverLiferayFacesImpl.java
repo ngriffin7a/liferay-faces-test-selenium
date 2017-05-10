@@ -17,7 +17,6 @@ package com.liferay.faces.test.selenium;
 
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.logging.LogFactory;
 
@@ -31,24 +30,26 @@ import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+import com.liferay.faces.util.logging.Logger;
+import com.liferay.faces.util.logging.LoggerFactory;
+
 
 /**
  * @author  Kyle Stiemann
  */
 /* package-private */ class HtmlUnitDriverLiferayFacesImpl extends HtmlUnitDriver {
 
-	private static final Level logLevel = TestUtil.getLogLevel();
+	// Logger
+	private static final Logger logger = LoggerFactory.getLogger(HtmlUnitDriverLiferayFacesImpl.class);
 
 	static {
 
-		// Disable HtmlUnit's verbose logging unless the developer specifies a log level below (or equal to)
-		// Level.FINER.
-		if (logLevel.intValue() > Level.FINER.intValue()) {
+		if (!logger.isDebugEnabled()) {
 
 			LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
 				"org.apache.commons.logging.impl.NoOpLog");
-			Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
-			Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
+			java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
+			java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
 		}
 	}
 
@@ -62,7 +63,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 		WebClient webClient = super.modifyWebClient(initialWebClient);
 		webClient.getOptions().setThrowExceptionOnScriptError(false);
 
-		if (logLevel.intValue() > Level.FINEST.intValue()) {
+		if (!logger.isDebugEnabled()) {
 			webClient.setCssErrorHandler(new SilentCssErrorHandler());
 		}
 

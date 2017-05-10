@@ -18,8 +18,6 @@ package com.liferay.faces.test.selenium.applicant;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -39,6 +37,8 @@ import com.liferay.faces.test.selenium.Browser;
 import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
+import com.liferay.faces.util.logging.Logger;
+import com.liferay.faces.util.logging.LoggerFactory;
 
 
 /**
@@ -48,11 +48,7 @@ import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 	// Logger
-	private static final Logger logger = Logger.getLogger(ApplicantTesterBase.class.getName());
-
-	static {
-		logger.setLevel(TestUtil.getLogLevel());
-	}
+	private static final Logger logger = LoggerFactory.getLogger(ApplicantTesterBase.class);
 
 	// Private Constants
 	protected static final String LIFERAY_JSF_JERSEY_PNG_FILE_PATH = TestUtil.JAVA_IO_TMPDIR + "liferay-jsf-jersey.png";
@@ -332,10 +328,10 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String libraryVersionXpath = "//li[contains(.,'" + libraryName + "')]";
 		SeleniumAssert.assertElementVisible(browser, libraryVersionXpath);
 
-		if (TestUtil.getLogLevel().intValue() >= Level.INFO.intValue()) {
+		if (logger.isInfoEnabled()) {
 
 			WebElement libraryVersionElement = browser.findElementByXpath(libraryVersionXpath);
-			logger.log(Level.INFO, libraryVersionElement.getText());
+			logger.info(libraryVersionElement.getText());
 		}
 	}
 

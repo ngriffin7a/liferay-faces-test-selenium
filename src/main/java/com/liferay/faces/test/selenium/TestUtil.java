@@ -16,14 +16,9 @@
 package com.liferay.faces.test.selenium;
 
 import java.io.File;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import com.liferay.faces.util.logging.Logger;
+import com.liferay.faces.util.logging.LoggerFactory;
 
 
 /**
@@ -32,7 +27,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public final class TestUtil {
 
 	// Logger
-	private static final Logger logger = Logger.getLogger(TestUtil.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(TestUtil.class);
 
 	// Public Constants
 	public static final String DEFAULT_BASE_URL = "http://" + TestUtil.getHost() + ":" + TestUtil.getPort();
@@ -85,44 +80,6 @@ public final class TestUtil {
 
 	public static String getHost(String defaultHost) {
 		return getSystemPropertyOrDefault("integration.host", defaultHost);
-	}
-
-	public static Level getLogLevel() {
-
-		String defaultLogLevel = "WARNING";
-
-		if (!RUNNING_WITH_MAVEN) {
-			defaultLogLevel = "FINE";
-		}
-
-		return getLogLevel(defaultLogLevel);
-	}
-
-	public static Level getLogLevel(String defaultLogLevel) {
-
-		Level logLevel;
-		String logLevelString = getSystemPropertyOrDefault("integration.log.level", null);
-
-		if (logLevelString != null) {
-
-			logLevelString = logLevelString.toUpperCase(Locale.ENGLISH);
-
-			try {
-				logLevel = Level.parse(logLevelString);
-			}
-			catch (Exception e) {
-
-				logger.log(Level.WARNING,
-					"\"{0}\" is not a valid log level. Setting log level to the default of \"{1}\".",
-					new String[] { logLevelString, defaultLogLevel });
-				logLevel = Level.parse(defaultLogLevel);
-			}
-		}
-		else {
-			logLevel = Level.parse(defaultLogLevel);
-		}
-
-		return logLevel;
 	}
 
 	public static String getPort() {

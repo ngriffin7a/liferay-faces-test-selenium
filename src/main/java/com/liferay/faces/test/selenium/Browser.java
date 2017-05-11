@@ -491,7 +491,7 @@ public class Browser implements WebDriver, JavascriptExecutor {
 		logger.info("Waiting for element {0} to be stale.", rerenderXpath);
 		waitUntil(ExpectedConditions.stalenessOf(rerenderElement));
 		logger.info("Element {0} is stale.", rerenderXpath);
-		waitForElementVisible(rerenderXpath);
+		waitForElementDisplayed(rerenderXpath);
 	}
 
 	@Override
@@ -513,7 +513,20 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	}
 
 	/**
-	 * Waits for an element to be enabled (see {@link WebElement#isEnabled()}) and visible.
+	 * Waits for an element to be displayed (see {@link
+	 * ExpectedConditions#visibilityOfElementLocated(org.openqa.selenium.By)} for more details).
+	 *
+	 * @param  elementXpath  The xpath of the element.
+	 */
+	public void waitForElementDisplayed(String elementXpath) {
+
+		logger.info("Waiting for element {0} to be displayed.", elementXpath);
+		waitUntil(ExpectedConditions.visibilityOfElementLocated(By.xpath(elementXpath)));
+		logger.info("Element {0} is displayed.", elementXpath);
+	}
+
+	/**
+	 * Waits for an element to be enabled (see {@link WebElement#isEnabled()}) and displayed.
 	 *
 	 * @param  elementXpath  The xpath of the element.
 	 *
@@ -524,50 +537,37 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	}
 
 	/**
-	 * Waits for an element to be enabled (see {@link WebElement#isEnabled()}) and potentially visible.
+	 * Waits for an element to be enabled (see {@link WebElement#isEnabled()}) and potentially displayed.
 	 *
-	 * @param  elementXpath          The xpath of the element.
-	 * @param  elementMustBeVisible  If true, also wait for the element to be visible.
+	 * @param  elementXpath            The xpath of the element.
+	 * @param  elementMustBeDisplayed  If true, also wait for the element to be displayed.
 	 */
-	public void waitForElementEnabled(String elementXpath, boolean elementMustBeVisible) {
+	public void waitForElementEnabled(String elementXpath, boolean elementMustBeDisplayed) {
 
 		logger.info("Waiting for element {0} to be enabled.", elementXpath);
 
 		By byXpath = By.xpath(elementXpath);
-		ExpectedCondition<?> expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(
-				new ElementEnabled(elementXpath), elementMustBeVisible, byXpath);
+		ExpectedCondition<?> expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementDisplayed(
+				new ElementEnabled(elementXpath), elementMustBeDisplayed, byXpath);
 		waitUntil(expectedCondition);
 		logger.info("Element {0} is enabled.", elementXpath);
 	}
 
 	/**
-	 * Waits for an element to not be visible (either not present or not visible, see {@link
+	 * Waits for an element to not be displayed (either not present or not displayed, see {@link
 	 * ExpectedConditions#invisibilityOfElementLocated(org.openqa.selenium.By)} for more details).
 	 *
 	 * @param  elementXpath  The xpath of the element.
 	 */
-	public void waitForElementNotVisible(String elementXpath) {
+	public void waitForElementNotDisplayed(String elementXpath) {
 
-		logger.info("Waiting for element {0} not to be visible.", elementXpath);
+		logger.info("Waiting for element {0} not to be displayed.", elementXpath);
 		waitUntil(ExpectedConditions.invisibilityOfElementLocated(By.xpath(elementXpath)));
-		logger.info("Element {0} is not visible.", elementXpath);
+		logger.info("Element {0} is not displayed.", elementXpath);
 	}
 
 	/**
-	 * Waits for an element to be visible (see {@link
-	 * ExpectedConditions#visibilityOfElementLocated(org.openqa.selenium.By)} for more details).
-	 *
-	 * @param  elementXpath  The xpath of the element.
-	 */
-	public void waitForElementVisible(String elementXpath) {
-
-		logger.info("Waiting for element {0} to be visible.", elementXpath);
-		waitUntil(ExpectedConditions.visibilityOfElementLocated(By.xpath(elementXpath)));
-		logger.info("Element {0} is visible.", elementXpath);
-	}
-
-	/**
-	 * Waits for an element to contain text and be visible.
+	 * Waits for an element to contain text and be displayed.
 	 *
 	 * @param  text          The text.
 	 * @param  elementXpath  The xpath of the element.
@@ -579,20 +579,20 @@ public class Browser implements WebDriver, JavascriptExecutor {
 	}
 
 	/**
-	 * Waits for an element to contain text and potentially be visible.
+	 * Waits for an element to contain text and potentially be displayed.
 	 *
-	 * @param  text                  The text.
-	 * @param  elementXpath          The xpath of the element.
-	 * @param  elementMustBeVisible  If true, also wait for the element to be visible.
+	 * @param  text                    The text.
+	 * @param  elementXpath            The xpath of the element.
+	 * @param  elementMustBeDisplayed  If true, also wait for the element to be displayed.
 	 */
-	public void waitForTextPresentInElement(String text, String elementXpath, boolean elementMustBeVisible) {
+	public void waitForTextPresentInElement(String text, String elementXpath, boolean elementMustBeDisplayed) {
 
 		logger.info("Waiting for text \"{0}\" to be present in element {1}.", text, elementXpath);
 
 		By byXpath = By.xpath(elementXpath);
 		ExpectedCondition<?> expectedCondition = ExpectedConditions.textToBePresentInElementLocated(byXpath, text);
-		expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementVisible(expectedCondition,
-				elementMustBeVisible, byXpath);
+		expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementDisplayed(expectedCondition,
+				elementMustBeDisplayed, byXpath);
 		waitUntil(expectedCondition);
 		logger.info("Text \"{0}\" is present in Element {1}.", text, elementXpath);
 	}

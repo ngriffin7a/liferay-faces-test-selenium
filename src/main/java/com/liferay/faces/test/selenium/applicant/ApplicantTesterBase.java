@@ -69,28 +69,28 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		Browser browser = Browser.getInstance();
 		browser.get(TestUtil.DEFAULT_BASE_URL + getContext());
 
-		SeleniumAssert.assertElementVisible(browser, getFirstNameFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getLastNameFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getEmailAddressFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getPhoneNumberFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getDateOfBirthFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getCityFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getProvinceIdFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getPostalCodeFieldXpath());
-		SeleniumAssert.assertElementVisible(browser, getShowHideCommentsLinkXpath());
-		assertFileUploadChooserVisible(browser);
-		assertLibraryElementVisible(browser, "Mojarra");
-		assertLibraryElementVisible(browser, "Liferay Faces Alloy");
-		assertLibraryElementVisible(browser, "Liferay Faces Bridge Impl");
+		SeleniumAssert.assertElementDisplayed(browser, getFirstNameFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getLastNameFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getEmailAddressFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getPhoneNumberFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getDateOfBirthFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getCityFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getProvinceIdFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getPostalCodeFieldXpath());
+		SeleniumAssert.assertElementDisplayed(browser, getShowHideCommentsLinkXpath());
+		assertFileUploadChooserDisplayed(browser);
+		assertLibraryElementDisplayed(browser, "Mojarra");
+		assertLibraryElementDisplayed(browser, "Liferay Faces Alloy");
+		assertLibraryElementDisplayed(browser, "Liferay Faces Bridge Impl");
 
 		if (TestUtil.getContainer().contains("liferay")) {
-			assertLibraryElementVisible(browser, "Liferay Faces Bridge Ext");
+			assertLibraryElementDisplayed(browser, "Liferay Faces Bridge Ext");
 		}
 
 		String extraLibraryName = getExtraLibraryName();
 
 		if (extraLibraryName != null) {
-			assertLibraryElementVisible(browser, extraLibraryName);
+			assertLibraryElementDisplayed(browser, extraLibraryName);
 		}
 	}
 
@@ -182,7 +182,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		browser.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
 
 		String firstNameFieldErrorXpath = getFieldErrorXpath(firstNameFieldXpath);
-		SeleniumAssert.assertElementNotVisible(browser, firstNameFieldErrorXpath);
+		SeleniumAssert.assertElementNotDisplayed(browser, firstNameFieldErrorXpath);
 		browser.clear(firstNameFieldXpath);
 		browser.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
 		SeleniumAssert.assertTextPresentInElement(browser, "Value is required", firstNameFieldErrorXpath);
@@ -199,7 +199,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String emailAddressFieldErrorXpath = getFieldErrorXpath(emailAddressFieldXpath);
 		SeleniumAssert.assertTextPresentInElement(browser, "Invalid e-mail address", emailAddressFieldErrorXpath);
 		sendKeysTabAndWaitForRerender(browser, emailAddressFieldXpath, "@liferay.com");
-		SeleniumAssert.assertElementNotVisible(browser, emailAddressFieldErrorXpath);
+		SeleniumAssert.assertElementNotDisplayed(browser, emailAddressFieldErrorXpath);
 	}
 
 	@Test
@@ -263,7 +263,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		SeleniumAssert.assertTextPresentInElement(browser, "Invalid date format", dateOfBirthFieldErrorXpath);
 		browser.clear(dateOfBirthFieldXpath);
 		sendKeysTabAndWaitForRerender(browser, dateOfBirthFieldXpath, "01/02/3456");
-		SeleniumAssert.assertElementNotVisible(browser, dateOfBirthFieldErrorXpath);
+		SeleniumAssert.assertElementNotDisplayed(browser, dateOfBirthFieldErrorXpath);
 	}
 
 	@Test
@@ -273,7 +273,8 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String fileUploadChooserXpath = getFileUploadChooserXpath();
 		WebElement fileUploadChooser = browser.findElementByXpath(fileUploadChooserXpath);
 
-		// Workaround PrimeFaces p:fileUpload being invisible to selenium.
+		// Set PrimeFaces p:fileUpload transform style to "none" since it causes the element to not be displayed
+		// according to Selenium (although the element is visible to users).
 		browser.executeScript("arguments[0].style.transform = 'none';", fileUploadChooser);
 
 		// Workaround https://github.com/ariya/phantomjs/issues/10993 by removing the multiple attribute from <input
@@ -312,21 +313,21 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String genesis11 =
 			"Indeed the people are one and they all have one language, and this is what they begin to do ...";
 		browser.sendKeys(getCommentsXpath(), genesis11);
-		browser.waitForElementNotVisible(getFieldErrorXpath("//*"));
+		browser.waitForElementNotDisplayed(getFieldErrorXpath("//*"));
 		browser.click(getSubmitButtonXpath());
 		SeleniumAssert.assertTextPresentInElement(browser, "Dear David,", getConfimationFormXpath());
 	}
 
 	protected abstract String getContext();
 
-	protected void assertFileUploadChooserVisible(Browser browser) {
-		SeleniumAssert.assertElementVisible(browser, getFileUploadChooserXpath());
+	protected void assertFileUploadChooserDisplayed(Browser browser) {
+		SeleniumAssert.assertElementDisplayed(browser, getFileUploadChooserXpath());
 	}
 
-	protected void assertLibraryElementVisible(Browser browser, String libraryName) {
+	protected void assertLibraryElementDisplayed(Browser browser, String libraryName) {
 
 		String libraryVersionXpath = "//li[contains(.,'" + libraryName + "')]";
-		SeleniumAssert.assertElementVisible(browser, libraryVersionXpath);
+		SeleniumAssert.assertElementDisplayed(browser, libraryVersionXpath);
 
 		if (logger.isInfoEnabled()) {
 
@@ -483,6 +484,6 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 	protected void submitFile(Browser browser) {
 
 		browser.click(getSubmitFileButtonXpath());
-		browser.waitForElementVisible(getUploadedFileXpath());
+		browser.waitForElementDisplayed(getUploadedFileXpath());
 	}
 }

@@ -127,6 +127,6 @@ public abstract class IntegrationTesterBase {
 		WebElement loginElement = browser.findElementByXpath(loginXpath);
 		browser.click(signInButtonXpath);
 		browser.waitUntil(ExpectedConditions.stalenessOf(loginElement));
-		browser.waitForElementVisible("//body");
+		browser.waitForElementDisplayed("//body");
 	}
 }

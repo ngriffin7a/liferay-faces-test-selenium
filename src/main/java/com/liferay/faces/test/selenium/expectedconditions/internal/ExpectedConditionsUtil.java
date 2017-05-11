@@ -30,15 +30,15 @@ public final class ExpectedConditionsUtil {
 		throw new AssertionError();
 	}
 
-	public static ExpectedCondition<?> ifNecessaryExpectElementVisible(ExpectedCondition<?> originalExpectedCondition,
-		boolean elementMustBeVisible, By locator) {
+	public static ExpectedCondition<?> ifNecessaryExpectElementDisplayed(ExpectedCondition<?> originalExpectedCondition,
+		boolean elementMustBeDisplayed, By locator) {
 
 		ExpectedCondition<?> expectedCondition = originalExpectedCondition;
 
-		if (elementMustBeVisible) {
+		if (elementMustBeDisplayed) {
 
-			ExpectedCondition<WebElement> elementVisible = ExpectedConditions.visibilityOfElementLocated(locator);
-			expectedCondition = ExpectedConditions.and(originalExpectedCondition, elementVisible);
+			ExpectedCondition<WebElement> elementDisplayed = ExpectedConditions.visibilityOfElementLocated(locator);
+			expectedCondition = ExpectedConditions.and(originalExpectedCondition, elementDisplayed);
 		}
 
 		return expectedCondition;

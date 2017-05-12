@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.test.selenium;
+package com.liferay.faces.test.selenium.webdriver.internal;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -37,10 +37,15 @@ import com.liferay.faces.util.logging.LoggerFactory;
 /**
  * @author  Kyle Stiemann
  */
-/* package-private */ class HtmlUnitDriverLiferayFacesImpl extends HtmlUnitDriver {
+public class HtmlUnitDriverLiferayFacesImpl extends HtmlUnitDriver {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(HtmlUnitDriverLiferayFacesImpl.class);
+
+	// Private Constants
+	private static final String APPLICATION_NAME = BrowserVersion.FIREFOX_45.getApplicationName();
+	private static final String APPLICATION_VERSION = BrowserVersion.FIREFOX_45.getApplicationVersion();
+	private static final int BROWSER_VERSION_NUMERIC = BrowserVersion.FIREFOX_45.getBrowserVersionNumeric();
 
 	static {
 
@@ -53,24 +58,15 @@ import com.liferay.faces.util.logging.LoggerFactory;
 		}
 	}
 
-	/* package-private */ HtmlUnitDriverLiferayFacesImpl(BrowserVersion browserVersion, boolean enableJavascript) {
-		super(browserVersion, enableJavascript);
+	public HtmlUnitDriverLiferayFacesImpl() {
+		super(BrowserVersion.FIREFOX_45, true);
 	}
 
-	@Override
-	protected WebClient modifyWebClient(WebClient initialWebClient) {
-
-		WebClient webClient = super.modifyWebClient(initialWebClient);
-		webClient.getOptions().setThrowExceptionOnScriptError(false);
-
-		if (!logger.isDebugEnabled()) {
-			webClient.setCssErrorHandler(new SilentCssErrorHandler());
-		}
-
-		return webClient;
+	public HtmlUnitDriverLiferayFacesImpl(String userAgent) {
+		super(new BrowserVersion(APPLICATION_NAME, APPLICATION_VERSION, userAgent, BROWSER_VERSION_NUMERIC), true);
 	}
 
-	/* package-private */ void loadImages() {
+	public void loadCurrentWindowImages() {
 
 		HtmlPage htmlPage = (HtmlPage) lastPage();
 		DomNodeList<DomElement> imageElements = htmlPage.getElementsByTagName("img");
@@ -88,5 +84,18 @@ import com.liferay.faces.util.logging.LoggerFactory;
 				// do nothing.
 			}
 		}
+	}
+
+	@Override
+	protected WebClient modifyWebClient(WebClient initialWebClient) {
+
+		WebClient webClient = super.modifyWebClient(initialWebClient);
+		webClient.getOptions().setThrowExceptionOnScriptError(false);
+
+		if (!logger.isDebugEnabled()) {
+			webClient.setCssErrorHandler(new SilentCssErrorHandler());
+		}
+
+		return webClient;
 	}
 }

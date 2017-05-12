@@ -101,10 +101,10 @@
 						<configuration>
 							<systemPropertyVariables>
 								<RUNNING_WITH_MAVEN>true</RUNNING_WITH_MAVEN>
-								<integration.browser>${integration.browser}</integration.browser>
+								<integration.browser.name>${integration.browser.name}</integration.browser.name>
 								<integration.browser.headless>${integration.browser.headless}</integration.browser.headless>
+								<integration.browser.simulate.mobile>${integration.browser.simulate.mobile}</integration.browser.simulate.mobile>
 								<integration.browser.wait.time.out>${integration.browser.wait.time.out}</integration.browser.wait.time.out>
-								<integration.log.level>${integration.log.level}</integration.log.level>
 								<integration.container>${integration.container}</integration.container>
 								<integration.host>${integration.host}</integration.host>
 								<integration.port>${integration.port}</integration.port>
@@ -114,7 +114,7 @@
 								<integration.sign.in.button.xpath>${integration.sign.in.button.xpath}</integration.sign.in.button.xpath>
 								<integration.login>${integration.login}</integration.login>
 								<integration.password>${integration.password}</integration.password>
-								<integration.selenium.output.directory>${project.build.directory}/selenium</integration.selenium.output.directory>
+								<integration.captured.browser.state.output.directory>${project.build.directory}/captured-browser-state</integration.captured.browser.state.output.directory>
 							</systemPropertyVariables>
 							<properties>
 								<property>
@@ -294,6 +294,7 @@
 		<dependency>
 			<groupId>com.liferay.faces</groupId>
 			<artifactId>com.liferay.faces.util</artifactId>
+			<scope>provided</scope>
 			<version>3.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

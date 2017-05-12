@@ -18,8 +18,15 @@ package com.liferay.faces.test.selenium;
 import org.junit.AfterClass;
 import org.junit.Before;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import com.liferay.faces.test.selenium.browser.BrowserDriver;
+import com.liferay.faces.test.selenium.browser.BrowserStateAsserter;
+import com.liferay.faces.test.selenium.browser.internal.BrowserDriverImpl;
+import com.liferay.faces.test.selenium.browser.internal.BrowserStateAsserterImpl;
+import com.liferay.faces.test.selenium.webdriver.WebDriverFactory;
 
 
 /**
@@ -27,8 +34,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  */
 public abstract class IntegrationTesterBase {
 
-	// Private Static Data Members
+	// Private Static Data Members (Singletons)
 	private static boolean setUp = false;
+	private static BrowserDriver browserDriver;
+	private static BrowserStateAsserter browserStateAsserter;
 
 	/**
 	 * {@link IntegrationTestSuiteListener#testRunFinished(org.junit.runner.Result)} is used to shut down the
@@ -47,11 +56,15 @@ public abstract class IntegrationTesterBase {
 
 	protected static void doTearDown() {
 
-		// When the browser is phantomjs or chrome, WebDriver.close() does not quit the browser (like it is
-		// supposed to
-		// http://seleniumhq.github.io/selenium/docs/api/java/org/openqa/selenium/WebDriver.html#close--),
-		// so use WebDriver.quit() instead.
-		Browser.getInstance().quit();
+		browserStateAsserter = null;
+
+		if (browserDriver != null) {
+
+			browserDriver.quit();
+			browserDriver = null;
+		}
+
+		setUp = false;
 	}
 
 	@Before
@@ -64,17 +77,90 @@ public abstract class IntegrationTesterBase {
 		}
 	}
 
+	/**
+	 * This method is run once before any tests in order to prepare for testing. The default behavior of this method is
+	 * to initialize the default {@link BrowserDriver} and sign in to the container where applicable.
+	 */
 	protected void doSetUp() {
-		signIn(Browser.getInstance());
+		signIn(getBrowserDriver());
 	}
 
-	protected final void signIn(Browser browser) {
+	/**
+	 * Returns an instance of {@link BrowserDriver}. The instance will be closed automatically. The instance may be a
+	 * singleton, new instance, or from a pool of BrowserDrivers. To obtain a new instance of BrowserDriver, use {@link
+	 * #getBrowserDriver(org.openqa.selenium.WebDriver, boolean, boolean)}.
+	 */
+	protected final BrowserDriver getBrowserDriver() {
+
+		if (browserDriver == null) {
+
+			String browserName = TestUtil.getSystemPropertyOrDefault("integration.browser.name", "chrome");
+
+			String defaultBrowserHeadlessString = "true";
+
+			// Default to non-headless when running with Firefox or Chrome without maven (in other words running tests
+			// from an IDE like Eclipse).
+			if ("firefox".equals(browserName) || ("chrome".equals(browserName) && !TestUtil.RUNNING_WITH_MAVEN)) {
+				defaultBrowserHeadlessString = "false";
+			}
+
+			String browserHeadlessString = TestUtil.getSystemPropertyOrDefault("integration.browser.headless",
+					defaultBrowserHeadlessString);
+			boolean browserHeadless = Boolean.parseBoolean(browserHeadlessString);
+			String browserSimulatingMobileString = TestUtil.getSystemPropertyOrDefault(
+					"integration.browser.simulate.mobile", "false");
+			boolean browserSimulatingMobile = Boolean.parseBoolean(browserSimulatingMobileString);
+			WebDriver webDriver = WebDriverFactory.getWebDriver(browserName, browserHeadless, browserSimulatingMobile);
+			browserDriver = newBrowserDriver(webDriver, browserHeadless, browserSimulatingMobile);
+		}
+
+		return browserDriver;
+	}
+
+	/**
+	 * Returns an instance of {@link BrowserStateAsserter} for the {@link BrowserDriver} obtained from {@link
+	 * #getBrowserDriver()}. The instance may be a singleton, new instance, or from a pool of BrowserStateAsserters. To
+	 * obtain a new instance of BrowserStateAsserter, use {@link
+	 * #getBrowserStateAsserter(com.liferay.faces.test.selenium.browser.BrowserDriver)}.
+	 */
+	protected final BrowserStateAsserter getBrowserStateAsserter() {
+
+		if (browserStateAsserter == null) {
+			browserStateAsserter = newBrowserStateAsserter(getBrowserDriver());
+		}
+
+		return browserStateAsserter;
+	}
+
+	/**
+	 * Returns a new instances of {@link BrowserDriver}. The BrowserDriver must be closed (via {@link
+	 * BrowserDriver#quit()} or {@link BrowserDriver#close()}) by the caller.
+	 *
+	 * @param  webDriver                The {@link WebDriver} used by the BrowserDriver to drive the browser.
+	 * @param  browserHeadless          If true, the browser will run in headless mode.
+	 * @param  browserSimulatingMobile  If true, the browser will request pages as a mobile device via its User-Agent.
+	 */
+	protected final BrowserDriver newBrowserDriver(WebDriver webDriver, boolean browserHeadless,
+		boolean browserSimulatingMobile) {
+		return new BrowserDriverImpl(webDriver, browserHeadless, browserSimulatingMobile);
+	}
+
+	/**
+	 * Returns a new instances of {@link BrowserStateAsserter}.
+	 *
+	 * @param  browserDriver  The {@link BrowserDriver} which should be used to assert the browser's state.
+	 */
+	protected final BrowserStateAsserter newBrowserStateAsserter(BrowserDriver browserDriver) {
+		return new BrowserStateAsserterImpl(browserDriver);
+	}
+
+	protected final void signIn(BrowserDriver browserDriver) {
 
 		String container = TestUtil.getContainer();
-		signIn(browser, container);
+		signIn(browserDriver, container);
 	}
 
-	protected final void signIn(Browser browser, String container) {
+	protected final void signIn(BrowserDriver browserDriver, String container) {
 
 		// Set up sign-in constants.
 		String defaultSignInContext = "";
@@ -111,22 +197,22 @@ public abstract class IntegrationTesterBase {
 				defaultSignInButtonXpath);
 		String login = TestUtil.getSystemPropertyOrDefault("integration.login", defaultLogin);
 		String password = TestUtil.getSystemPropertyOrDefault("integration.password", defaultPassword);
-		signIn(browser, signInURL, loginXpath, login, passwordXpath, password, signInButtonXpath);
+		signIn(browserDriver, signInURL, loginXpath, login, passwordXpath, password, signInButtonXpath);
 	}
 
-	protected final void signIn(Browser browser, String signInURL, String loginXpath, String login,
+	protected final void signIn(BrowserDriver browserDriver, String signInURL, String loginXpath, String login,
 		String passwordXpath, String password, String signInButtonXpath) {
 
-		browser.get(signInURL);
-		browser.waitForElementEnabled(loginXpath);
-		browser.clear(loginXpath);
-		browser.sendKeys(loginXpath, login);
-		browser.clear(passwordXpath);
-		browser.sendKeys(passwordXpath, password);
+		browserDriver.navigateWindowTo(signInURL);
+		browserDriver.waitForElementEnabled(loginXpath);
+		browserDriver.clearElement(loginXpath);
+		browserDriver.sendKeysToElement(loginXpath, login);
+		browserDriver.clearElement(passwordXpath);
+		browserDriver.sendKeysToElement(passwordXpath, password);
 
-		WebElement loginElement = browser.findElementByXpath(loginXpath);
-		browser.click(signInButtonXpath);
-		browser.waitUntil(ExpectedConditions.stalenessOf(loginElement));
-		browser.waitForElementDisplayed("//body");
+		WebElement loginElement = browserDriver.findElementByXpath(loginXpath);
+		browserDriver.clickElement(signInButtonXpath);
+		browserDriver.waitFor(ExpectedConditions.stalenessOf(loginElement));
+		browserDriver.waitForElementDisplayed("//body");
 	}
 }

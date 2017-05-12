@@ -24,21 +24,21 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 /**
  * @author  Kyle Stiemann
  */
-public class TabOpened implements ExpectedCondition<Boolean> {
+public class WindowOpened implements ExpectedCondition<Boolean> {
 
 	// Private Data Members
-	private int initialNumberOfTabs;
+	private int initialNumberOfWindows;
 
-	public TabOpened(int initialNumberOfTabs) {
-		this.initialNumberOfTabs = initialNumberOfTabs;
+	public WindowOpened(int initialNumberOfWindows) {
+		this.initialNumberOfWindows = initialNumberOfWindows;
 	}
 
 	@Override
 	public Boolean apply(WebDriver webDriver) {
 
 		Set<String> windowHandles = webDriver.getWindowHandles();
-		int numberOfTabs = windowHandles.size();
+		int numberOfWindows = windowHandles.size();
 
-		return (initialNumberOfTabs + 1) == numberOfTabs;
+		return (initialNumberOfWindows + 1) == numberOfWindows;
 	}
 }

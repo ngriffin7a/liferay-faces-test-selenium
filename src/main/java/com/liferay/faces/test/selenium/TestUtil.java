@@ -53,14 +53,14 @@ public final class TestUtil {
 		throw new AssertionError();
 	}
 
-	public static int getBrowserWaitTimeOut() {
-		return TestUtil.getBrowserWaitTimeOut(5);
+	public static int getBrowserDriverWaitTimeOut() {
+		return TestUtil.getBrowserDriverWaitTimeOut(5);
 	}
 
-	public static int getBrowserWaitTimeOut(Integer defaultTimeOutInSeconds) {
+	public static int getBrowserDriverWaitTimeOut(Integer defaultTimeOutInSeconds) {
 
 		String defaultTimeOutInSecondsString = defaultTimeOutInSeconds.toString();
-		String timeOutInSecondsString = getSystemPropertyOrDefault("integration.browser.wait.time.out",
+		String timeOutInSecondsString = getSystemPropertyOrDefault("integration.browser.driver.wait.time.out",
 				defaultTimeOutInSecondsString);
 
 		return Integer.parseInt(timeOutInSecondsString);

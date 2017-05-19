@@ -189,6 +189,7 @@ public class BrowserDriverImpl implements BrowserDriver {
 	public void clearElement(String elementXpath) {
 
 		centerElementInCurrentWindow(elementXpath);
+
 		WebElement element = findElementByXpath(elementXpath);
 		String value = element.getAttribute("value");
 

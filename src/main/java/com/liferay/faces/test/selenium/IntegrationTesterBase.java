@@ -88,7 +88,7 @@ public abstract class IntegrationTesterBase {
 	/**
 	 * Returns an instance of {@link BrowserDriver}. The instance will be closed automatically. The instance may be a
 	 * singleton, new instance, or from a pool of BrowserDrivers. To obtain a new instance of BrowserDriver, use {@link
-	 * #getBrowserDriver(org.openqa.selenium.WebDriver, boolean, boolean)}.
+	 * #newBrowserDriver(org.openqa.selenium.WebDriver, boolean, boolean)}.
 	 */
 	protected final BrowserDriver getBrowserDriver() {
 
@@ -121,7 +121,7 @@ public abstract class IntegrationTesterBase {
 	 * Returns an instance of {@link BrowserStateAsserter} for the {@link BrowserDriver} obtained from {@link
 	 * #getBrowserDriver()}. The instance may be a singleton, new instance, or from a pool of BrowserStateAsserters. To
 	 * obtain a new instance of BrowserStateAsserter, use {@link
-	 * #getBrowserStateAsserter(com.liferay.faces.test.selenium.browser.BrowserDriver)}.
+	 * #newBrowserStateAsserter(com.liferay.faces.test.selenium.browser.BrowserDriver)}.
 	 */
 	protected final BrowserStateAsserter getBrowserStateAsserter() {
 
@@ -134,7 +134,7 @@ public abstract class IntegrationTesterBase {
 
 	/**
 	 * Returns a new instances of {@link BrowserDriver}. The BrowserDriver must be closed (via {@link
-	 * BrowserDriver#quit()} or {@link BrowserDriver#close()}) by the caller.
+	 * BrowserDriver#quit()} or {@link BrowserDriver#closeCurrentWindow()}) by the caller.
 	 *
 	 * @param  webDriver                The {@link WebDriver} used by the BrowserDriver to drive the browser.
 	 * @param  browserHeadless          If true, the browser will run in headless mode.

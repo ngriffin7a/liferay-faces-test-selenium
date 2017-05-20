@@ -213,15 +213,6 @@ public class BrowserDriverImpl implements BrowserDriver {
 		findElementByXpath(elementXpath).click();
 	}
 
-	/**
-	 * Clicks on the element specified via xpath and waits for the clicked element to be rerendered (for example via
-	 * Ajax or full page reload). This method will only work if the element clicked is also rerendered. If the clicked
-	 * element will not be rerendered, then use {@link
-	 * Browser#performAndWaitForRerender(org.openqa.selenium.interactions.Action, java.lang.String)} with {@link
-	 * Browser#createClickAction(java.lang.String)} and the xpath of an element which will be rerendered instead.
-	 *
-	 * @param  elementXpath  The xpath of the element to be clicked and rerendered.
-	 */
 	@Override
 	public void clickElementAndWaitForRerender(String elementXpath) {
 		performAndWaitForRerender(createClickElementAction(elementXpath), elementXpath);
@@ -408,13 +399,6 @@ public class BrowserDriverImpl implements BrowserDriver {
 		webDriver.get(url);
 	}
 
-	/**
-	 * Performs an {@link Action} and waits for an element to be rerendered (for example via Ajax or a full page
-	 * reload).
-	 *
-	 * @param  action         The action which will cause the rerender.
-	 * @param  rerenderXpath  The xpath of the element which will be rerendered.
-	 */
 	@Override
 	public void performAndWaitForRerender(Action action, String rerenderXpath) {
 
@@ -474,12 +458,6 @@ public class BrowserDriverImpl implements BrowserDriver {
 		webDriverWait.until(expectedCondition);
 	}
 
-	/**
-	 * Waits for an element to be displayed (see {@link
-	 * ExpectedConditions#visibilityOfElementLocated(org.openqa.selenium.By)} for more details).
-	 *
-	 * @param  elementXpath  The xpath of the element.
-	 */
 	@Override
 	public void waitForElementDisplayed(String elementXpath) {
 
@@ -488,24 +466,11 @@ public class BrowserDriverImpl implements BrowserDriver {
 		logger.info("Element {0} is displayed.", elementXpath);
 	}
 
-	/**
-	 * Waits for an element to be enabled (see {@link WebElement#isEnabled()}) and displayed.
-	 *
-	 * @param  elementXpath  The xpath of the element.
-	 *
-	 * @see    #waitForElementEnabled(java.lang.String, boolean)
-	 */
 	@Override
 	public void waitForElementEnabled(String elementXpath) {
 		waitForElementEnabled(elementXpath, true);
 	}
 
-	/**
-	 * Waits for an element to be enabled (see {@link WebElement#isEnabled()}) and potentially displayed.
-	 *
-	 * @param  elementXpath            The xpath of the element.
-	 * @param  elementMustBeDisplayed  If true, also wait for the element to be displayed.
-	 */
 	@Override
 	public void waitForElementEnabled(String elementXpath, boolean elementMustBeDisplayed) {
 
@@ -518,12 +483,6 @@ public class BrowserDriverImpl implements BrowserDriver {
 		logger.info("Element {0} is enabled.", elementXpath);
 	}
 
-	/**
-	 * Waits for an element to not be displayed (either not present or not displayed, see {@link
-	 * ExpectedConditions#invisibilityOfElementLocated(org.openqa.selenium.By)} for more details).
-	 *
-	 * @param  elementXpath  The xpath of the element.
-	 */
 	@Override
 	public void waitForElementNotDisplayed(String elementXpath) {
 
@@ -532,26 +491,11 @@ public class BrowserDriverImpl implements BrowserDriver {
 		logger.info("Element {0} is not displayed.", elementXpath);
 	}
 
-	/**
-	 * Waits for an element to contain text and be displayed.
-	 *
-	 * @param  text          The text.
-	 * @param  elementXpath  The xpath of the element.
-	 *
-	 * @see    #waitForElementEnabled(java.lang.String, boolean)
-	 */
 	@Override
 	public void waitForTextPresentInElement(String text, String elementXpath) {
 		waitForTextPresentInElement(text, elementXpath, true);
 	}
 
-	/**
-	 * Waits for an element to contain text and potentially be displayed.
-	 *
-	 * @param  text                    The text.
-	 * @param  elementXpath            The xpath of the element.
-	 * @param  elementMustBeDisplayed  If true, also wait for the element to be displayed.
-	 */
 	@Override
 	public void waitForTextPresentInElement(String text, String elementXpath, boolean elementMustBeDisplayed) {
 

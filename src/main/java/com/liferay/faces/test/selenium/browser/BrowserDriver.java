@@ -67,8 +67,9 @@ public interface BrowserDriver {
 	 * Clicks on the element specified via xpath and waits for the clicked element to be rerendered (for example via
 	 * Ajax or full page reload). This method will only work if the element clicked is also rerendered. If the clicked
 	 * element will not be rerendered, then use {@link
-	 * Browser#performAndWaitForRerender(org.openqa.selenium.interactions.Action, java.lang.String)} with {@link
-	 * Browser#createClickAction(java.lang.String)} and the xpath of an element which will be rerendered instead.
+	 * BrowserDriver#performAndWaitForRerender(org.openqa.selenium.interactions.Action, java.lang.String)} with {@link
+	 * BrowserDriver#createClickElementAction(java.lang.String)} and the xpath of an element which will be rerendered
+	 * instead.
 	 *
 	 * @param  elementXpath  The xpath of the element to be clicked and rerendered.
 	 */

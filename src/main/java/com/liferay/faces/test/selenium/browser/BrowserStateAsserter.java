@@ -37,8 +37,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element is enabled (see {@link WebElement#isEnabled()} for more details) and displayed. This
-	 * method will wait for the amount of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link
-	 * BrowserDriver#setWaitTimeOut()}) before failing the assertion.
+	 * method will wait for the amount of time specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link
+	 * BrowserDriver#setWaitTimeOut(int)}) before failing the assertion.
 	 *
 	 * @param  elementXpath  The xpath of the element.
 	 *
@@ -48,8 +48,9 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element is enabled (see {@link WebElement#isEnabled()} for more details) and potentially
-	 * displayed. This method will wait for the amount of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or
-	 * {@link BrowserDriver#setWaitTimeOut()}) before failing the assertion.
+	 * displayed. This method will wait for the amount of time specified by {@link
+	 * TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before failing the
+	 * assertion.
 	 *
 	 * @param  elementXpath            The xpath of the element.
 	 * @param  elementMustBeDisplayed  If true, assert that this element must also be displayed.
@@ -59,8 +60,8 @@ public interface BrowserStateAsserter {
 	/**
 	 * Asserts that an element is not displayed (see {@link
 	 * ExpectedConditions#invisibilityOfElementLocated(org.openqa.selenium.By)} for more details). This method will wait
-	 * for the amount of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link
-	 * BrowserDriver#setWaitTimeOut()}) before failing the assertion.
+	 * for the amount of time specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link
+	 * BrowserDriver#setWaitTimeOut(int)}) before failing the assertion.
 	 *
 	 * @param  elementXpath  The xpath of the element.
 	 */
@@ -68,7 +69,7 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element is not present on the page. This method will wait for the amount of time specified by
-	 * {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before failing the
+	 * {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before failing the
 	 * assertion.
 	 *
 	 * @param  elementXpath  The xpath of the element.
@@ -77,7 +78,7 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element is present on the page. This method will wait for the amount of time specified by {@link
-	 * TestUtil#getBrowserWaitTimeOut()} before failing the assertion.
+	 * TestUtil#getBrowserDriverWaitTimeOut()} before failing the assertion.
 	 *
 	 * @param  elementXpath  The xpath of the element.
 	 */
@@ -85,8 +86,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Assert that some expected condition is not satisfied within a browser. This method will wait for the amount of
-	 * time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before
-	 * failing the assertion.
+	 * time specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)})
+	 * before failing the assertion.
 	 *
 	 * @param  expectedCondition  The expected condition of the browser.
 	 */
@@ -94,8 +95,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element does not contain text and is displayed. This method will wait for the amount of time
-	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before failing
-	 * the assertion.
+	 * specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before
+	 * failing the assertion.
 	 *
 	 * @param  text          The text contents.
 	 * @param  elementXpath  The xpath of the element.
@@ -106,8 +107,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element does not contain text and potentially is displayed. This method will wait for the amount
-	 * of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before
-	 * failing the assertion.
+	 * of time specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link
+	 * BrowserDriver#setWaitTimeOut(int)}) before failing the assertion.
 	 *
 	 * @param  text                    The text contents.
 	 * @param  elementXpath            The xpath of the element.
@@ -117,7 +118,7 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element contains text and is displayed. This method will wait for the amount of time specified by
-	 * {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before failing the
+	 * {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before failing the
 	 * assertion.
 	 *
 	 * @param  text          The text contents.
@@ -129,8 +130,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element contains text and potentially is displayed. This method will wait for the amount of time
-	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before failing
-	 * the assertion.
+	 * specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before
+	 * failing the assertion.
 	 *
 	 * @param  text                    The text contents.
 	 * @param  elementXpath            The xpath of the element.
@@ -140,8 +141,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element's value contains text and is displayed. This method will wait for the amount of time
-	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before failing
-	 * the assertion.
+	 * specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before
+	 * failing the assertion.
 	 *
 	 * @param  text          The text contents.
 	 * @param  elementXpath  The xpath of the element.
@@ -152,8 +153,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Asserts that an element's value contains text and potentially is displayed. This method will wait for the amount
-	 * of time specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before
-	 * failing the assertion.
+	 * of time specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link
+	 * BrowserDriver#setWaitTimeOut(int)}) before failing the assertion.
 	 *
 	 * @param  text                    The text contents.
 	 * @param  elementXpath            The xpath of the element.
@@ -163,8 +164,8 @@ public interface BrowserStateAsserter {
 
 	/**
 	 * Assert that some expected condition is satisfied within a browser. This method will wait for the amount of time
-	 * specified by {@link TestUtil#getBrowserWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut()}) before failing
-	 * the assertion.
+	 * specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before
+	 * failing the assertion.
 	 *
 	 * @param  expectedCondition  The expected condition of the browser.
 	 */

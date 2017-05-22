@@ -69,8 +69,8 @@ public class WebDriverFactoryImpl extends WebDriverFactory {
 			if (browserHeadless) {
 
 				// The start-maximized argument does not work correctly in headless mode, so set the window size to
-				// 1024x768.
-				chromeOptions.addArguments("headless", "disable-gpu", "window-size=1024,768");
+				// 1920x1200 (resolution of a 15.4 inch screen).
+				chromeOptions.addArguments("headless", "disable-gpu", "window-size=1920,1200");
 			}
 			else {
 				chromeOptions.addArguments("start-maximized");

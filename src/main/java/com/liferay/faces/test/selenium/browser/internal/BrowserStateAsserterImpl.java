@@ -97,7 +97,7 @@ public class BrowserStateAsserterImpl implements BrowserStateAsserter {
 
 	@Override
 	public void assertElementNotPresent(String elementXpath) {
-		assertFalse(ExpectedConditions.presenceOfElementLocated(By.xpath(elementXpath)));
+		assertFalse(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(elementXpath)));
 	}
 
 	@Override

@@ -36,7 +36,7 @@ import org.openqa.selenium.support.ui.Select;
 import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
-import com.liferay.faces.test.selenium.browser.BrowserStateAsserter;
+import com.liferay.faces.test.selenium.browser.WaitingAsserter;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 
@@ -59,29 +59,29 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		BrowserDriver browserDriver = getBrowserDriver();
 		browserDriver.navigateWindowTo(TestUtil.DEFAULT_BASE_URL + getContext());
 
-		BrowserStateAsserter browserStateAsserter = getBrowserStateAsserter();
-		browserStateAsserter.assertElementDisplayed(getFirstNameFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getLastNameFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getEmailAddressFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getPhoneNumberFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getDateOfBirthFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getCityFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getProvinceIdFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getPostalCodeFieldXpath());
-		browserStateAsserter.assertElementDisplayed(getShowHideCommentsLinkXpath());
-		assertFileUploadChooserDisplayed(browserDriver, browserStateAsserter);
-		assertLibraryElementDisplayed(browserStateAsserter, "Mojarra", browserDriver);
-		assertLibraryElementDisplayed(browserStateAsserter, "Liferay Faces Alloy", browserDriver);
-		assertLibraryElementDisplayed(browserStateAsserter, "Liferay Faces Bridge Impl", browserDriver);
+		WaitingAsserter waitingAsserter = getWaitingAsserter();
+		waitingAsserter.assertElementDisplayed(getFirstNameFieldXpath());
+		waitingAsserter.assertElementDisplayed(getLastNameFieldXpath());
+		waitingAsserter.assertElementDisplayed(getEmailAddressFieldXpath());
+		waitingAsserter.assertElementDisplayed(getPhoneNumberFieldXpath());
+		waitingAsserter.assertElementDisplayed(getDateOfBirthFieldXpath());
+		waitingAsserter.assertElementDisplayed(getCityFieldXpath());
+		waitingAsserter.assertElementDisplayed(getProvinceIdFieldXpath());
+		waitingAsserter.assertElementDisplayed(getPostalCodeFieldXpath());
+		waitingAsserter.assertElementDisplayed(getShowHideCommentsLinkXpath());
+		assertFileUploadChooserDisplayed(browserDriver, waitingAsserter);
+		assertLibraryElementDisplayed(waitingAsserter, "Mojarra", browserDriver);
+		assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Alloy", browserDriver);
+		assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Bridge Impl", browserDriver);
 
 		if (TestUtil.getContainer().contains("liferay")) {
-			assertLibraryElementDisplayed(browserStateAsserter, "Liferay Faces Bridge Ext", browserDriver);
+			assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Bridge Ext", browserDriver);
 		}
 
 		String extraLibraryName = getExtraLibraryName();
 
 		if (extraLibraryName != null) {
-			assertLibraryElementDisplayed(browserStateAsserter, extraLibraryName, browserDriver);
+			assertLibraryElementDisplayed(waitingAsserter, extraLibraryName, browserDriver);
 		}
 	}
 
@@ -128,8 +128,8 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		simpleDateFormat.setTimeZone(gmtTimeZone);
 
 		String todayString = simpleDateFormat.format(today);
-		BrowserStateAsserter browserStateAsserter = getBrowserStateAsserter();
-		browserStateAsserter.assertTextPresentInElementValue(todayString, dateOfBirthFieldXpath);
+		WaitingAsserter waitingAsserter = getWaitingAsserter();
+		waitingAsserter.assertTextPresentInElementValue(todayString, dateOfBirthFieldXpath);
 
 		// Test that resetting the date pattern via preferences changes the Birthday year back to the long version.
 		browserDriver.clickElement(getEditModeXpath());
@@ -158,7 +158,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		String oldDatePattern = "MM/dd/yyyy";
 		simpleDateFormat.applyPattern(oldDatePattern);
 		todayString = simpleDateFormat.format(today);
-		browserStateAsserter.assertTextPresentInElementValue(todayString, dateOfBirthFieldXpath);
+		waitingAsserter.assertTextPresentInElementValue(todayString, dateOfBirthFieldXpath);
 	}
 
 	@Test
@@ -174,11 +174,11 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		browserDriver.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
 
 		String firstNameFieldErrorXpath = getFieldErrorXpath(firstNameFieldXpath);
-		BrowserStateAsserter browserStateAsserter = getBrowserStateAsserter();
-		browserStateAsserter.assertElementNotDisplayed(firstNameFieldErrorXpath);
+		WaitingAsserter waitingAsserter = getWaitingAsserter();
+		waitingAsserter.assertElementNotDisplayed(firstNameFieldErrorXpath);
 		browserDriver.clearElement(firstNameFieldXpath);
 		browserDriver.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
-		browserStateAsserter.assertTextPresentInElement("Value is required", firstNameFieldErrorXpath);
+		waitingAsserter.assertTextPresentInElement("Value is required", firstNameFieldErrorXpath);
 	}
 
 	@Test
@@ -190,10 +190,10 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		sendKeysTabAndWaitForRerender(browserDriver, emailAddressFieldXpath, "test");
 
 		String emailAddressFieldErrorXpath = getFieldErrorXpath(emailAddressFieldXpath);
-		BrowserStateAsserter browserStateAsserter = getBrowserStateAsserter();
-		browserStateAsserter.assertTextPresentInElement("Invalid e-mail address", emailAddressFieldErrorXpath);
+		WaitingAsserter waitingAsserter = getWaitingAsserter();
+		waitingAsserter.assertTextPresentInElement("Invalid e-mail address", emailAddressFieldErrorXpath);
 		sendKeysTabAndWaitForRerender(browserDriver, emailAddressFieldXpath, "@liferay.com");
-		browserStateAsserter.assertElementNotDisplayed(emailAddressFieldErrorXpath);
+		waitingAsserter.assertElementNotDisplayed(emailAddressFieldErrorXpath);
 	}
 
 	@Test
@@ -203,22 +203,16 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		clearAllFields(browserDriver);
 		browserDriver.clickElementAndWaitForRerender(getSubmitButtonXpath());
 
-		BrowserStateAsserter browserStateAsserter = getBrowserStateAsserter();
-		browserStateAsserter.assertTextPresentInElement("Value is required",
-			getFieldErrorXpath(getFirstNameFieldXpath()));
-		browserStateAsserter.assertTextPresentInElement("Value is required",
-			getFieldErrorXpath(getLastNameFieldXpath()));
-		browserStateAsserter.assertTextPresentInElement("Value is required",
+		WaitingAsserter waitingAsserter = getWaitingAsserter();
+		waitingAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getFirstNameFieldXpath()));
+		waitingAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getLastNameFieldXpath()));
+		waitingAsserter.assertTextPresentInElement("Value is required",
 			getFieldErrorXpath(getEmailAddressFieldXpath()));
-		browserStateAsserter.assertTextPresentInElement("Value is required",
-			getFieldErrorXpath(getPhoneNumberFieldXpath()));
-		browserStateAsserter.assertTextPresentInElement("Value is required",
-			getFieldErrorXpath(getDateOfBirthFieldXpath()));
-		browserStateAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getCityFieldXpath()));
-		browserStateAsserter.assertTextPresentInElement("Value is required",
-			getFieldErrorXpath(getProvinceIdFieldXpath()));
-		browserStateAsserter.assertTextPresentInElement("Value is required",
-			getFieldErrorXpath(getPostalCodeFieldXpath()));
+		waitingAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getPhoneNumberFieldXpath()));
+		waitingAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getDateOfBirthFieldXpath()));
+		waitingAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getCityFieldXpath()));
+		waitingAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getProvinceIdFieldXpath()));
+		waitingAsserter.assertTextPresentInElement("Value is required", getFieldErrorXpath(getPostalCodeFieldXpath()));
 	}
 
 	@Test
@@ -228,9 +222,9 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		browserDriver.centerElementInCurrentWindow(getPostalCodeFieldXpath());
 		sendKeysTabAndWaitForRerender(browserDriver, getPostalCodeFieldXpath(), "32801");
 
-		BrowserStateAsserter browserStateAsserter = getBrowserStateAsserter();
-		browserStateAsserter.assertTextPresentInElementValue("Orlando", getCityFieldXpath());
-		browserStateAsserter.assertTextPresentInElementValue("3", getProvinceIdFieldXpath());
+		WaitingAsserter waitingAsserter = getWaitingAsserter();
+		waitingAsserter.assertTextPresentInElementValue("Orlando", getCityFieldXpath());
+		waitingAsserter.assertTextPresentInElementValue("3", getProvinceIdFieldXpath());
 	}
 
 	@Test
@@ -244,7 +238,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		browserDriver.sendKeysToElement(commentsXpath, "testing 1, 2, 3");
 		browserDriver.clickElementAndWaitForRerender(showHideCommentsLinkXpath);
 		browserDriver.clickElementAndWaitForRerender(showHideCommentsLinkXpath);
-		getBrowserStateAsserter().assertTextPresentInElement("testing 1, 2, 3", commentsXpath);
+		getWaitingAsserter().assertTextPresentInElement("testing 1, 2, 3", commentsXpath);
 	}
 
 	@Test
@@ -257,11 +251,11 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		sendKeysTabAndWaitForRerender(browserDriver, dateOfBirthFieldXpath, "12/34/5678");
 
 		String dateOfBirthFieldErrorXpath = getFieldErrorXpath(dateOfBirthFieldXpath);
-		BrowserStateAsserter browserStateAsserter = getBrowserStateAsserter();
-		browserStateAsserter.assertTextPresentInElement("Invalid date format", dateOfBirthFieldErrorXpath);
+		WaitingAsserter waitingAsserter = getWaitingAsserter();
+		waitingAsserter.assertTextPresentInElement("Invalid date format", dateOfBirthFieldErrorXpath);
 		browserDriver.clearElement(dateOfBirthFieldXpath);
 		sendKeysTabAndWaitForRerender(browserDriver, dateOfBirthFieldXpath, "01/02/3456");
-		browserStateAsserter.assertElementNotDisplayed(dateOfBirthFieldErrorXpath);
+		waitingAsserter.assertElementNotDisplayed(dateOfBirthFieldErrorXpath);
 	}
 
 	@Test
@@ -287,7 +281,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 		fileUploadChooser.sendKeys(LIFERAY_JSF_JERSEY_PNG_FILE_PATH);
 		submitFile(browserDriver);
-		getBrowserStateAsserter().assertTextPresentInElement("jersey", getUploadedFileXpath());
+		getWaitingAsserter().assertTextPresentInElement("jersey", getUploadedFileXpath());
 	}
 
 	@Test
@@ -313,7 +307,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		browserDriver.sendKeysToElement(getCommentsXpath(), genesis11);
 		browserDriver.waitForElementNotDisplayed(getFieldErrorXpath("//*"));
 		browserDriver.clickElement(getSubmitButtonXpath());
-		getBrowserStateAsserter().assertTextPresentInElement("Dear David,", getConfimationFormXpath());
+		getWaitingAsserter().assertTextPresentInElement("Dear David,", getConfimationFormXpath());
 	}
 
 	@Before
@@ -328,16 +322,15 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 
 	protected abstract String getContext();
 
-	protected void assertFileUploadChooserDisplayed(BrowserDriver browserDriver,
-		BrowserStateAsserter browserStateAsserter) {
-		browserStateAsserter.assertElementDisplayed(getFileUploadChooserXpath());
+	protected void assertFileUploadChooserDisplayed(BrowserDriver browserDriver, WaitingAsserter waitingAsserter) {
+		waitingAsserter.assertElementDisplayed(getFileUploadChooserXpath());
 	}
 
-	protected void assertLibraryElementDisplayed(BrowserStateAsserter browserStateAsserter, String libraryName,
+	protected void assertLibraryElementDisplayed(WaitingAsserter waitingAsserter, String libraryName,
 		BrowserDriver browserDriver) {
 
 		String libraryVersionXpath = "//li[contains(.,'" + libraryName + "')]";
-		browserStateAsserter.assertElementDisplayed(libraryVersionXpath);
+		waitingAsserter.assertElementDisplayed(libraryVersionXpath);
 
 		if (logger.isInfoEnabled()) {
 

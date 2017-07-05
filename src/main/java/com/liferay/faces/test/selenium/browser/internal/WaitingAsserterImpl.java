@@ -22,19 +22,19 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
-import com.liferay.faces.test.selenium.browser.BrowserStateAsserter;
+import com.liferay.faces.test.selenium.browser.WaitingAsserter;
 import com.liferay.faces.test.selenium.expectedconditions.ElementEnabled;
 
 
 /**
  * @author  Kyle Stiemann
  */
-public class BrowserStateAsserterImpl implements BrowserStateAsserter {
+public class WaitingAsserterImpl implements WaitingAsserter {
 
 	// Private Data Members
 	private BrowserDriver browserDriver;
 
-	public BrowserStateAsserterImpl(BrowserDriver browserDriver) {
+	public WaitingAsserterImpl(BrowserDriver browserDriver) {
 		this.browserDriver = browserDriver;
 	}
 

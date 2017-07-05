@@ -23,9 +23,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
-import com.liferay.faces.test.selenium.browser.BrowserStateAsserter;
+import com.liferay.faces.test.selenium.browser.WaitingAsserter;
 import com.liferay.faces.test.selenium.browser.internal.BrowserDriverImpl;
-import com.liferay.faces.test.selenium.browser.internal.BrowserStateAsserterImpl;
+import com.liferay.faces.test.selenium.browser.internal.WaitingAsserterImpl;
 import com.liferay.faces.test.selenium.webdriver.WebDriverFactory;
 
 
@@ -37,7 +37,7 @@ public abstract class IntegrationTesterBase {
 	// Private Static Data Members (Singletons)
 	private static boolean setUp = false;
 	private static BrowserDriver browserDriver;
-	private static BrowserStateAsserter browserStateAsserter;
+	private static WaitingAsserter waitingAsserter;
 
 	/**
 	 * {@link IntegrationTestSuiteListener#testRunFinished(org.junit.runner.Result)} is used to shut down the
@@ -56,7 +56,7 @@ public abstract class IntegrationTesterBase {
 
 	protected static void doTearDown() {
 
-		browserStateAsserter = null;
+		waitingAsserter = null;
 
 		if (browserDriver != null) {
 
@@ -118,18 +118,18 @@ public abstract class IntegrationTesterBase {
 	}
 
 	/**
-	 * Returns an instance of {@link BrowserStateAsserter} for the {@link BrowserDriver} obtained from {@link
+	 * Returns an instance of {@link WaitingAsserter} for the {@link BrowserDriver} obtained from {@link
 	 * #getBrowserDriver()}. The instance may be a singleton, new instance, or from a pool of BrowserStateAsserters. To
-	 * obtain a new instance of BrowserStateAsserter, use {@link
-	 * #newBrowserStateAsserter(com.liferay.faces.test.selenium.browser.BrowserDriver)}.
+	 * obtain a new instance of WaitingAsserter, use {@link
+	 * #newWaitingAsserter(com.liferay.faces.test.selenium.browser.BrowserDriver)}.
 	 */
-	protected final BrowserStateAsserter getBrowserStateAsserter() {
+	protected final WaitingAsserter getWaitingAsserter() {
 
-		if (browserStateAsserter == null) {
-			browserStateAsserter = newBrowserStateAsserter(getBrowserDriver());
+		if (waitingAsserter == null) {
+			waitingAsserter = newWaitingAsserter(getBrowserDriver());
 		}
 
-		return browserStateAsserter;
+		return waitingAsserter;
 	}
 
 	/**
@@ -146,12 +146,12 @@ public abstract class IntegrationTesterBase {
 	}
 
 	/**
-	 * Returns a new instances of {@link BrowserStateAsserter}.
+	 * Returns a new instances of {@link WaitingAsserter}.
 	 *
 	 * @param  browserDriver  The {@link BrowserDriver} which should be used to assert the browser's state.
 	 */
-	protected final BrowserStateAsserter newBrowserStateAsserter(BrowserDriver browserDriver) {
-		return new BrowserStateAsserterImpl(browserDriver);
+	protected final WaitingAsserter newWaitingAsserter(BrowserDriver browserDriver) {
+		return new WaitingAsserterImpl(browserDriver);
 	}
 
 	protected final void signIn(BrowserDriver browserDriver) {

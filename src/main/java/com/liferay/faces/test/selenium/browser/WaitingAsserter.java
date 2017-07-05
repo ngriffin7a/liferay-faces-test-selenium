@@ -23,13 +23,20 @@ import com.liferay.faces.test.selenium.TestUtil;
 
 
 /**
+ * Throws an {@link AssertionError} if the {@link BrowserDriver} is in an unexpected state (more technically if the
+ * state of the BrowserDriver does not match the {@link ExpectedCondition}). This class will wait for the amount of time
+ * specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link BrowserDriver#setWaitTimeOut(int)}) before
+ * failing the assertion.
+ *
  * @author  Kyle Stiemann
  */
-public interface BrowserStateAsserter {
+public interface WaitingAsserter {
 
 	/**
 	 * Asserts that an element is displayed (see {@link
-	 * ExpectedConditions#visibilityOfElementLocated(org.openqa.selenium.By)} for more details).
+	 * ExpectedConditions#visibilityOfElementLocated(org.openqa.selenium.By)} for more details). This method will wait
+	 * for the amount of time specified by {@link TestUtil#getBrowserDriverWaitTimeOut()} (or {@link
+	 * BrowserDriver#setWaitTimeOut(int)}) before failing the assertion.
 	 *
 	 * @param  elementXpath  The xpath of the element.
 	 */

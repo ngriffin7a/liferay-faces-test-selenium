@@ -33,9 +33,9 @@ import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
-import com.liferay.faces.test.selenium.IntegrationTesterBase;
-import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
+import com.liferay.faces.test.selenium.browser.BrowserDriverManagingTesterBase;
+import com.liferay.faces.test.selenium.browser.TestUtil;
 import com.liferay.faces.test.selenium.browser.WaitingAsserter;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
@@ -45,7 +45,7 @@ import com.liferay.faces.util.logging.LoggerFactory;
  * @author  Kyle Stiemann
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class ApplicantTesterBase extends IntegrationTesterBase {
+public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBase {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(ApplicantTesterBase.class);
@@ -463,7 +463,7 @@ public abstract class ApplicantTesterBase extends IntegrationTesterBase {
 		// Reset everything in case there was an error.
 		BrowserDriver browserDriver = getBrowserDriver();
 		browserDriver.clearBrowserCookies();
-		signIn(browserDriver);
+		TestUtil.signIn(browserDriver);
 		browserDriver.navigateWindowTo(TestUtil.DEFAULT_BASE_URL + getContext());
 	}
 

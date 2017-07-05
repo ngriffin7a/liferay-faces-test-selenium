@@ -19,8 +19,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.liferay.faces.test.selenium.TestUtil;
-
 
 /**
  * Throws an {@link AssertionError} if the {@link BrowserDriver} is in an unexpected state (more technically if the

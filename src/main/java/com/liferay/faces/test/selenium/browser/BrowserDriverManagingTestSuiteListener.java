@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.test.selenium;
+package com.liferay.faces.test.selenium.browser;
 
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
@@ -22,12 +22,12 @@ import org.junit.runner.notification.RunListener;
 /**
  * @author  Kyle Stiemann
  */
-public final class IntegrationTestSuiteListener extends RunListener {
+public final class BrowserDriverManagingTestSuiteListener extends RunListener {
 
 	@Override
 	public void testRunFinished(Result result) throws Exception {
 
-		IntegrationTesterBase.doTearDown();
+		BrowserDriverManagingTesterBase.doTearDown();
 		super.testRunFinished(result);
 	}
 }

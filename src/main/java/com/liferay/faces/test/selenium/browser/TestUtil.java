@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.test.selenium;
+package com.liferay.faces.test.selenium.browser;
 
 import java.io.File;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
@@ -101,5 +104,67 @@ public final class TestUtil {
 		}
 
 		return propertyValue;
+	}
+
+	public static void signIn(BrowserDriver browserDriver) {
+
+		String container = TestUtil.getContainer();
+		signIn(browserDriver, container);
+	}
+
+	public static void signIn(BrowserDriver browserDriver, String container) {
+
+		// Set up sign-in constants.
+		String defaultSignInContext = "";
+		String defaultLoginXpath = "";
+		String defaultPasswordXpath = "";
+		String defaultSignInButtonXpath = "";
+		String defaultLogin = "";
+		String defaultPassword = "";
+
+		if (container.contains("liferay")) {
+
+			defaultSignInContext = "/c/portal/login";
+			defaultLoginXpath = "//input[contains(@id, '_login') and @type='text']";
+			defaultPasswordXpath = "//input[contains(@id, '_password') and @type='password']";
+			defaultSignInButtonXpath = "//button[contains(., 'Sign In')]";
+			defaultLogin = "test@liferay.com";
+			defaultPassword = "test";
+		}
+		else if (container.contains("pluto")) {
+
+			defaultSignInContext = TestUtil.DEFAULT_PLUTO_CONTEXT;
+			defaultLoginXpath = "//input[contains(@id, '_username')]";
+			defaultPasswordXpath = "//input[contains(@id, '_password')]";
+			defaultSignInButtonXpath = "//input[contains(@id, '_login')]";
+			defaultLogin = "pluto";
+			defaultPassword = "pluto";
+		}
+
+		String signInContext = TestUtil.getSystemPropertyOrDefault("integration.sign.in.context", defaultSignInContext);
+		String signInURL = TestUtil.DEFAULT_BASE_URL + signInContext;
+		String loginXpath = TestUtil.getSystemPropertyOrDefault("integration.login.xpath", defaultLoginXpath);
+		String passwordXpath = TestUtil.getSystemPropertyOrDefault("integration.password.xpath", defaultPasswordXpath);
+		String signInButtonXpath = TestUtil.getSystemPropertyOrDefault("integration.sign.in.button.xpath",
+				defaultSignInButtonXpath);
+		String login = TestUtil.getSystemPropertyOrDefault("integration.login", defaultLogin);
+		String password = TestUtil.getSystemPropertyOrDefault("integration.password", defaultPassword);
+		signIn(browserDriver, signInURL, loginXpath, login, passwordXpath, password, signInButtonXpath);
+	}
+
+	public static void signIn(BrowserDriver browserDriver, String signInURL, String loginXpath, String login,
+		String passwordXpath, String password, String signInButtonXpath) {
+
+		browserDriver.navigateWindowTo(signInURL);
+		browserDriver.waitForElementEnabled(loginXpath);
+		browserDriver.clearElement(loginXpath);
+		browserDriver.sendKeysToElement(loginXpath, login);
+		browserDriver.clearElement(passwordXpath);
+		browserDriver.sendKeysToElement(passwordXpath, password);
+
+		WebElement loginElement = browserDriver.findElementByXpath(loginXpath);
+		browserDriver.clickElement(signInButtonXpath);
+		browserDriver.waitFor(ExpectedConditions.stalenessOf(loginElement));
+		browserDriver.waitForElementDisplayed("//body");
 	}
 }

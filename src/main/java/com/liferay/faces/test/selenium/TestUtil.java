@@ -34,10 +34,6 @@ public final class TestUtil {
 	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";
 	public static final String JAVA_IO_TMPDIR;
 
-	// /* package-private */ Constants
-	/* package-private */ static final boolean RUNNING_WITH_MAVEN = Boolean.valueOf(TestUtil.getSystemPropertyOrDefault(
-				"RUNNING_WITH_MAVEN", "false"));
-
 	static {
 
 		String javaIOTmpdir = System.getProperty("java.io.tmpdir");

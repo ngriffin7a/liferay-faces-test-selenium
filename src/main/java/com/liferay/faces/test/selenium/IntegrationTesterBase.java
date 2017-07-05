@@ -18,15 +18,13 @@ package com.liferay.faces.test.selenium;
 import org.junit.AfterClass;
 import org.junit.Before;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
+import com.liferay.faces.test.selenium.browser.BrowserDriverFactory;
 import com.liferay.faces.test.selenium.browser.WaitingAsserter;
-import com.liferay.faces.test.selenium.browser.internal.BrowserDriverImpl;
-import com.liferay.faces.test.selenium.browser.internal.WaitingAsserterImpl;
-import com.liferay.faces.test.selenium.webdriver.WebDriverFactory;
+import com.liferay.faces.test.selenium.browser.WaitingAsserterFactory;
 
 
 /**
@@ -34,8 +32,12 @@ import com.liferay.faces.test.selenium.webdriver.WebDriverFactory;
  */
 public abstract class IntegrationTesterBase {
 
+	// Private Constants
+	private static final boolean RUNNING_WITH_MAVEN = Boolean.valueOf(TestUtil.getSystemPropertyOrDefault(
+				"RUNNING_WITH_MAVEN", "false"));
+
 	// Private Static Data Members (Singletons)
-	private static boolean setUp = false;
+	private static boolean isSetUp = false;
 	private static BrowserDriver browserDriver;
 	private static WaitingAsserter waitingAsserter;
 
@@ -49,7 +51,7 @@ public abstract class IntegrationTesterBase {
 	@AfterClass
 	public static void tearDown() {
 
-		if (!TestUtil.RUNNING_WITH_MAVEN) {
+		if (!RUNNING_WITH_MAVEN) {
 			doTearDown();
 		}
 	}
@@ -64,16 +66,16 @@ public abstract class IntegrationTesterBase {
 			browserDriver = null;
 		}
 
-		setUp = false;
+		isSetUp = false;
 	}
 
 	@Before
 	public final void setUp() {
 
-		if (!setUp) {
+		if (!isSetUp) {
 
 			doSetUp();
-			setUp = true;
+			isSetUp = true;
 		}
 	}
 
@@ -88,30 +90,12 @@ public abstract class IntegrationTesterBase {
 	/**
 	 * Returns an instance of {@link BrowserDriver}. The instance will be closed automatically. The instance may be a
 	 * singleton, new instance, or from a pool of BrowserDrivers. To obtain a new instance of BrowserDriver, use {@link
-	 * #newBrowserDriver(org.openqa.selenium.WebDriver, boolean, boolean)}.
+	 * BrowserDriverFactory#getBrowserDriver()}.
 	 */
 	protected final BrowserDriver getBrowserDriver() {
 
 		if (browserDriver == null) {
-
-			String browserName = TestUtil.getSystemPropertyOrDefault("integration.browser.name", "chrome");
-
-			String defaultBrowserHeadlessString = "true";
-
-			// Default to non-headless when running with Firefox or Chrome without maven (in other words running tests
-			// from an IDE like Eclipse).
-			if ("firefox".equals(browserName) || ("chrome".equals(browserName) && !TestUtil.RUNNING_WITH_MAVEN)) {
-				defaultBrowserHeadlessString = "false";
-			}
-
-			String browserHeadlessString = TestUtil.getSystemPropertyOrDefault("integration.browser.headless",
-					defaultBrowserHeadlessString);
-			boolean browserHeadless = Boolean.parseBoolean(browserHeadlessString);
-			String browserSimulatingMobileString = TestUtil.getSystemPropertyOrDefault(
-					"integration.browser.simulate.mobile", "false");
-			boolean browserSimulatingMobile = Boolean.parseBoolean(browserSimulatingMobileString);
-			WebDriver webDriver = WebDriverFactory.getWebDriver(browserName, browserHeadless, browserSimulatingMobile);
-			browserDriver = newBrowserDriver(webDriver, browserHeadless, browserSimulatingMobile);
+			browserDriver = BrowserDriverFactory.getBrowserDriver();
 		}
 
 		return browserDriver;
@@ -121,37 +105,15 @@ public abstract class IntegrationTesterBase {
 	 * Returns an instance of {@link WaitingAsserter} for the {@link BrowserDriver} obtained from {@link
 	 * #getBrowserDriver()}. The instance may be a singleton, new instance, or from a pool of BrowserStateAsserters. To
 	 * obtain a new instance of WaitingAsserter, use {@link
-	 * #newWaitingAsserter(com.liferay.faces.test.selenium.browser.BrowserDriver)}.
+	 * WaitingAsserterFactory#getWaitingAsserter(com.liferay.faces.test.selenium.browser.BrowserDriver)}.
 	 */
 	protected final WaitingAsserter getWaitingAsserter() {
 
 		if (waitingAsserter == null) {
-			waitingAsserter = newWaitingAsserter(getBrowserDriver());
+			waitingAsserter = WaitingAsserterFactory.getWaitingAsserter(getBrowserDriver());
 		}
 
 		return waitingAsserter;
-	}
-
-	/**
-	 * Returns a new instances of {@link BrowserDriver}. The BrowserDriver must be closed (via {@link
-	 * BrowserDriver#quit()} or {@link BrowserDriver#closeCurrentWindow()}) by the caller.
-	 *
-	 * @param  webDriver                The {@link WebDriver} used by the BrowserDriver to drive the browser.
-	 * @param  browserHeadless          If true, the browser will run in headless mode.
-	 * @param  browserSimulatingMobile  If true, the browser will request pages as a mobile device via its User-Agent.
-	 */
-	protected final BrowserDriver newBrowserDriver(WebDriver webDriver, boolean browserHeadless,
-		boolean browserSimulatingMobile) {
-		return new BrowserDriverImpl(webDriver, browserHeadless, browserSimulatingMobile);
-	}
-
-	/**
-	 * Returns a new instances of {@link WaitingAsserter}.
-	 *
-	 * @param  browserDriver  The {@link BrowserDriver} which should be used to assert the browser's state.
-	 */
-	protected final WaitingAsserter newWaitingAsserter(BrowserDriver browserDriver) {
-		return new WaitingAsserterImpl(browserDriver);
 	}
 
 	protected final void signIn(BrowserDriver browserDriver) {

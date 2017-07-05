@@ -47,7 +47,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
 import com.liferay.faces.test.selenium.expectedconditions.ElementEnabled;
-import com.liferay.faces.test.selenium.webdriver.internal.HtmlUnitDriverLiferayFacesImpl;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 

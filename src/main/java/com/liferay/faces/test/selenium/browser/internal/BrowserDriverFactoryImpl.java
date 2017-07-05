@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.test.selenium.webdriver.internal;
+package com.liferay.faces.test.selenium.browser.internal;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -25,7 +25,8 @@ import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.liferay.faces.test.selenium.TestUtil;
-import com.liferay.faces.test.selenium.webdriver.WebDriverFactory;
+import com.liferay.faces.test.selenium.browser.BrowserDriver;
+import com.liferay.faces.test.selenium.browser.BrowserDriverFactory;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 
@@ -35,17 +36,42 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 /**
  * @author  Kyle Stiemann
  */
-public class WebDriverFactoryImpl extends WebDriverFactory {
+public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 
 	// Logger
-	private static final Logger logger = LoggerFactory.getLogger(WebDriverFactoryImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(BrowserDriverFactoryImpl.class);
 
 	// Private Constants
 	private static final String IPHONE_7_IOS_10_0_USER_AGENT =
 		"Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A5297c Safari/602.1";
+	private static final boolean RUNNING_WITH_MAVEN = Boolean.valueOf(TestUtil.getSystemPropertyOrDefault(
+				"RUNNING_WITH_MAVEN", "false"));
 
 	@Override
-	public WebDriver getWebDriverImplementation(String browserName, boolean browserHeadless,
+	public BrowserDriver getBrowserDriverImplementation() {
+
+		String browserName = TestUtil.getSystemPropertyOrDefault("integration.browser.name", "chrome");
+
+		String defaultBrowserHeadlessString = "true";
+
+		// Default to non-headless when running with Firefox or Chrome without maven (in other words running tests
+		// from an IDE like Eclipse).
+		if ("firefox".equals(browserName) || ("chrome".equals(browserName) && !RUNNING_WITH_MAVEN)) {
+			defaultBrowserHeadlessString = "false";
+		}
+
+		String browserHeadlessString = TestUtil.getSystemPropertyOrDefault("integration.browser.headless",
+				defaultBrowserHeadlessString);
+		boolean browserHeadless = Boolean.parseBoolean(browserHeadlessString);
+		String browserSimulatingMobileString = TestUtil.getSystemPropertyOrDefault(
+				"integration.browser.simulate.mobile", "false");
+		boolean browserSimulatingMobile = Boolean.parseBoolean(browserSimulatingMobileString);
+
+		return getBrowserDriverImplementation(browserName, browserHeadless, browserSimulatingMobile);
+	}
+
+	@Override
+	public BrowserDriver getBrowserDriverImplementation(String browserName, boolean browserHeadless,
 		boolean browserSimulateMobile) {
 
 		WebDriver webDriver;
@@ -186,6 +212,12 @@ public class WebDriverFactoryImpl extends WebDriverFactory {
 			webDriver.manage().window().maximize();
 		}
 
-		return webDriver;
+		return getBrowserDriverImplementation(webDriver, browserHeadless, browserSimulateMobile);
+	}
+
+	@Override
+	public BrowserDriver getBrowserDriverImplementation(WebDriver webDriver, boolean browserHeadless,
+		boolean browserSimulateMobile) {
+		return new BrowserDriverImpl(webDriver, browserHeadless, browserSimulateMobile);
 	}
 }

@@ -34,11 +34,11 @@ public abstract class BrowserDriverManagingTesterBase {
 	private static WaitingAsserter waitingAsserter;
 
 	/**
-	 * {@link IntegrationTestSuiteListener#testRunFinished(org.junit.runner.Result)} is used to shut down the
+	 * {@link BrowserDriverManagingTestSuiteListener#testRunFinished(org.junit.runner.Result)} is used to shut down the
 	 * browser/webDriver when the tests are run with the maven. However, {@link
-	 * IntegrationTestSuiteListener#testRunFinished(org.junit.runner.Result)} is not called when the tests are not run
-	 * with the maven (i.e. when the tests are run from an IDE). So when the tests are run from an IDE, it is necessary
-	 * to shutdown the browser after each test class is run.
+	 * BrowserDriverManagingTestSuiteListener#testRunFinished(org.junit.runner.Result)} is not called when the tests are
+	 * not run with the maven (i.e. when the tests are run from an IDE). So when the tests are run from an IDE, it is
+	 * necessary to shutdown the browser after each test class is run.
 	 */
 	@AfterClass
 	public static void tearDown() {

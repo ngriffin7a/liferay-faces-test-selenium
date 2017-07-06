@@ -95,8 +95,8 @@ public abstract class BrowserDriverFactory {
 	 * Returns a new instance of {@link BrowserDriver} with the default {@link WebDriver} settings. The BrowserDriver
 	 * must be closed (via {@link BrowserDriver#quit()} or {@link BrowserDriver#closeCurrentWindow()}) by the caller.
 	 *
-	 * @see  #getBrowserDriverImplemenation(java.lang.String, boolean, boolean)
-	 * @see  #getBrowserDriverImplemenation(org.openqa.selenium.WebDriver, boolean, boolean)
+	 * @see  #getBrowserDriverImplementation(java.lang.String, boolean, boolean)
+	 * @see  #getBrowserDriverImplementation(org.openqa.selenium.WebDriver, boolean, boolean)
 	 */
 	public abstract BrowserDriver getBrowserDriverImplementation();
 

@@ -44,11 +44,12 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
 import com.liferay.faces.test.selenium.browser.TestUtil;
 import com.liferay.faces.test.selenium.expectedconditions.ElementEnabled;
-import com.liferay.faces.util.logging.Logger;
-import com.liferay.faces.util.logging.LoggerFactory;
 
 
 /**
@@ -130,15 +131,15 @@ public class BrowserDriverImpl implements BrowserDriver {
 		}
 		catch (Exception e) {
 
-			logger.error("Unable to write page source to {0} due to the following exception:\n", htmlFileName);
-			logger.error(e);
+			logger.error("Unable to write page source to {} due to the following exception:\n", htmlFileName);
+			logger.error("", e);
 		}
 		finally {
 			close(printWriter);
 		}
 
 		String currentUrl = getCurrentWindowUrl();
-		logger.info("The html of url=\"{0}\" has been written to {1}", currentUrl, htmlFileName);
+		logger.info("The html of url=\"{}\" has been written to {}", currentUrl, htmlFileName);
 
 		WebDriver webDriver = getWebDriver();
 
@@ -156,15 +157,14 @@ public class BrowserDriverImpl implements BrowserDriver {
 			}
 			catch (Exception e) {
 
-				logger.error("Unable to write page source to {0} due to the following exception:\n",
-					screenshotFileName);
+				logger.error("Unable to write page source to {} due to the following exception:\n", screenshotFileName);
 				logger.error("", e);
 			}
 			finally {
 				close(fileOutputStream);
 			}
 
-			logger.info("A screenshot of url=\"{0}\" has been saved to {1}", currentUrl, screenshotFileName);
+			logger.info("A screenshot of url=\"{}\" has been saved to {}", currentUrl, screenshotFileName);
 		}
 	}
 
@@ -387,7 +387,7 @@ public class BrowserDriverImpl implements BrowserDriver {
 			htmlUnitDriverLiferayFacesImpl.loadCurrentWindowImages();
 		}
 		else {
-			logger.warn("Images are automatically loaded by {0}", browserName);
+			logger.warn("Images are automatically loaded by {}", browserName);
 		}
 	}
 
@@ -403,9 +403,9 @@ public class BrowserDriverImpl implements BrowserDriver {
 
 		WebElement rerenderElement = findElementByXpath(rerenderXpath);
 		action.perform();
-		logger.info("Waiting for element {0} to be stale.", rerenderXpath);
+		logger.info("Waiting for element {} to be stale.", rerenderXpath);
 		waitFor(ExpectedConditions.stalenessOf(rerenderElement));
-		logger.info("Element {0} is stale.", rerenderXpath);
+		logger.info("Element {} is stale.", rerenderXpath);
 		waitForElementDisplayed(rerenderXpath);
 	}
 
@@ -460,9 +460,9 @@ public class BrowserDriverImpl implements BrowserDriver {
 	@Override
 	public void waitForElementDisplayed(String elementXpath) {
 
-		logger.info("Waiting for element {0} to be displayed.", elementXpath);
+		logger.info("Waiting for element {} to be displayed.", elementXpath);
 		waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath(elementXpath)));
-		logger.info("Element {0} is displayed.", elementXpath);
+		logger.info("Element {} is displayed.", elementXpath);
 	}
 
 	@Override
@@ -473,21 +473,21 @@ public class BrowserDriverImpl implements BrowserDriver {
 	@Override
 	public void waitForElementEnabled(String elementXpath, boolean elementMustBeDisplayed) {
 
-		logger.info("Waiting for element {0} to be enabled.", elementXpath);
+		logger.info("Waiting for element {} to be enabled.", elementXpath);
 
 		By byXpath = By.xpath(elementXpath);
 		ExpectedCondition<?> expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementDisplayed(
 				new ElementEnabled(elementXpath), elementMustBeDisplayed, byXpath);
 		waitFor(expectedCondition);
-		logger.info("Element {0} is enabled.", elementXpath);
+		logger.info("Element {} is enabled.", elementXpath);
 	}
 
 	@Override
 	public void waitForElementNotDisplayed(String elementXpath) {
 
-		logger.info("Waiting for element {0} not to be displayed.", elementXpath);
+		logger.info("Waiting for element {} not to be displayed.", elementXpath);
 		waitFor(ExpectedConditions.invisibilityOfElementLocated(By.xpath(elementXpath)));
-		logger.info("Element {0} is not displayed.", elementXpath);
+		logger.info("Element {} is not displayed.", elementXpath);
 	}
 
 	@Override
@@ -498,14 +498,14 @@ public class BrowserDriverImpl implements BrowserDriver {
 	@Override
 	public void waitForTextPresentInElement(String text, String elementXpath, boolean elementMustBeDisplayed) {
 
-		logger.info("Waiting for text \"{0}\" to be present in element {1}.", text, elementXpath);
+		logger.info("Waiting for text \"{}\" to be present in element {}.", text, elementXpath);
 
 		By byXpath = By.xpath(elementXpath);
 		ExpectedCondition<?> expectedCondition = ExpectedConditions.textToBePresentInElementLocated(byXpath, text);
 		expectedCondition = ExpectedConditionsUtil.ifNecessaryExpectElementDisplayed(expectedCondition,
 				elementMustBeDisplayed, byXpath);
 		waitFor(expectedCondition);
-		logger.info("Text \"{0}\" is present in Element {1}.", text, elementXpath);
+		logger.info("Text \"{}\" is present in Element {}.", text, elementXpath);
 	}
 
 	private void close(Closeable closeable) {

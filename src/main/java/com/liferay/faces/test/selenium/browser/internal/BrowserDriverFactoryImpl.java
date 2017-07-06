@@ -24,11 +24,12 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
 import com.liferay.faces.test.selenium.browser.BrowserDriverFactory;
 import com.liferay.faces.test.selenium.browser.TestUtil;
-import com.liferay.faces.util.logging.Logger;
-import com.liferay.faces.util.logging.LoggerFactory;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
@@ -84,7 +85,7 @@ public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 			if (chromeBinaryPath != null) {
 
 				chromeOptions.setBinary(chromeBinaryPath);
-				logger.info("Chrome Binary: {0}", chromeBinaryPath);
+				logger.info("Chrome Binary: {}", chromeBinaryPath);
 			}
 
 			if (browserHeadless && browserSimulateMobile) {
@@ -114,7 +115,7 @@ public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 			String firefoxBinaryPath = TestUtil.getSystemPropertyOrDefault("webdriver.firefox.bin", null);
 
 			if (firefoxBinaryPath != null) {
-				logger.info("Firefox Binary: {0}", firefoxBinaryPath);
+				logger.info("Firefox Binary: {}", firefoxBinaryPath);
 			}
 
 			FirefoxProfile firefoxProfile = new FirefoxProfile();
@@ -135,7 +136,7 @@ public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 			String phantomJSBinaryPath = TestUtil.getSystemPropertyOrDefault("phantomjs.binary.path", null);
 
 			if (phantomJSBinaryPath != null) {
-				logger.info("PhantomJS Binary: {0}", phantomJSBinaryPath);
+				logger.info("PhantomJS Binary: {}", phantomJSBinaryPath);
 			}
 
 			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();

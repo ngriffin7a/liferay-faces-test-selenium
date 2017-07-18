@@ -71,7 +71,8 @@ public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBas
 		waitingAsserter.assertElementDisplayed(getPostalCodeFieldXpath());
 		waitingAsserter.assertElementDisplayed(getShowHideCommentsLinkXpath());
 		assertFileUploadChooserDisplayed(browserDriver, waitingAsserter);
-		assertLibraryElementDisplayed(waitingAsserter, "Mojarra", browserDriver);
+		String facesImplName = System.getProperty("faces.impl.name");
+		assertLibraryElementDisplayed(waitingAsserter, facesImplName, browserDriver);
 		assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Alloy", browserDriver);
 		assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Bridge Impl", browserDriver);
 

@@ -309,7 +309,7 @@ public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBas
 		browserDriver.sendKeysToElement(getCommentsXpath(), genesis11);
 		browserDriver.waitForElementNotDisplayed(getFieldErrorXpath("//*"));
 		browserDriver.clickElement(getSubmitButtonXpath());
-		getWaitingAsserter().assertTextPresentInElement("Dear David,", getConfimationFormXpath());
+		getWaitingAsserter().assertTextPresentInElement("Thank you David", getConfimationFormXpath());
 	}
 
 	@Before

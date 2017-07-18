@@ -29,9 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class TestUtil {
 
-	// Logger
-	private static final Logger logger = LoggerFactory.getLogger(TestUtil.class);
-
 	// Public Constants
 	public static final String DEFAULT_BASE_URL = "http://" + TestUtil.getHost() + ":" + TestUtil.getPort();
 	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";

@@ -71,9 +71,14 @@ public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBas
 		waitingAsserter.assertElementDisplayed(getPostalCodeFieldXpath());
 		waitingAsserter.assertElementDisplayed(getShowHideCommentsLinkXpath());
 		assertFileUploadChooserDisplayed(browserDriver, waitingAsserter);
+
 		String facesImplName = System.getProperty("faces.impl.name");
 		assertLibraryElementDisplayed(waitingAsserter, facesImplName, browserDriver);
-		assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Alloy", browserDriver);
+
+		if (isLiferayFacesAlloyIncluded()) {
+			assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Alloy", browserDriver);
+		}
+
 		assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Bridge Impl", browserDriver);
 
 		if (TestUtil.getContainer().contains("liferay")) {
@@ -179,6 +184,7 @@ public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBas
 		WaitingAsserter waitingAsserter = getWaitingAsserter();
 		waitingAsserter.assertElementNotDisplayed(firstNameFieldErrorXpath);
 		browserDriver.clearElement(firstNameFieldXpath);
+		lastNameFieldClick = browserDriver.createClickElementAction(lastNameFieldXpath);
 		browserDriver.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
 		waitingAsserter.assertTextPresentInElement("Value is required", firstNameFieldErrorXpath);
 	}
@@ -458,6 +464,10 @@ public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBas
 
 	protected String getUploadedFileXpath() {
 		return "//tr[@class='portlet-section-body results-row']/td[2]";
+	}
+
+	protected boolean isLiferayFacesAlloyIncluded() {
+		return true;
 	}
 
 	protected void resetBrowser() {

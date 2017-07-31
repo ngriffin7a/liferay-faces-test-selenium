@@ -184,7 +184,6 @@ public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBas
 		WaitingAsserter waitingAsserter = getWaitingAsserter();
 		waitingAsserter.assertElementNotDisplayed(firstNameFieldErrorXpath);
 		browserDriver.clearElement(firstNameFieldXpath);
-		lastNameFieldClick = browserDriver.createClickElementAction(lastNameFieldXpath);
 		browserDriver.performAndWaitForRerender(lastNameFieldClick, firstNameFieldXpath);
 		waitingAsserter.assertTextPresentInElement("Value is required", firstNameFieldErrorXpath);
 	}

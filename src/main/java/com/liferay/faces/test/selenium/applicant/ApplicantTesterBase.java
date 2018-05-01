@@ -319,7 +319,7 @@ public abstract class ApplicantTesterBase extends BrowserDriverManagingTesterBas
 
 	@Before
 	public void setUpApplicantTester() {
-		getBrowserDriver().setWaitTimeOut(TestUtil.getBrowserDriverWaitTimeOut(10));
+		getBrowserDriver().setWaitTimeOut(TestUtil.getBrowserDriverWaitTimeOut() * 2);
 	}
 
 	@After

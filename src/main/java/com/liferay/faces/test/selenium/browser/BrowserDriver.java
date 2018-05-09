@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public interface BrowserDriver {
 
 	/**
 	 * Calls {@link #captureCurrentBrowserState(java.lang.String, java.lang.String)}. The default output directory is
-	 * <code>{@link TestUtil#JAVA_IO_TMPDIR} + "captured-browser-state"</code>. This can be changed with the <code>
+	 * <code>System.getProperty("java.io.tmpdir") + "captured-browser-state"</code>. This can be changed with the <code>
 	 * "integration.captured.browser.state.output.directory"</code> system property. No file name prefix is used.
 	 *
 	 * @see  #captureCurrentBrowserState(java.lang.String, java.lang.String)

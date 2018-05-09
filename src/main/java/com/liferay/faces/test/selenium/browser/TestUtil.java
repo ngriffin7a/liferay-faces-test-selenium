@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,8 @@
  */
 package com.liferay.faces.test.selenium.browser;
 
-import java.io.File;
-
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -32,18 +27,6 @@ public final class TestUtil {
 	// Public Constants
 	public static final String DEFAULT_BASE_URL = "http://" + TestUtil.getHost() + ":" + TestUtil.getPort();
 	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";
-	public static final String JAVA_IO_TMPDIR;
-
-	static {
-
-		String javaIOTmpdir = System.getProperty("java.io.tmpdir");
-
-		if (!javaIOTmpdir.endsWith(File.separator)) {
-			javaIOTmpdir += File.separator;
-		}
-
-		JAVA_IO_TMPDIR = javaIOTmpdir;
-	}
 
 	private TestUtil() {
 		throw new AssertionError();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
 import com.liferay.faces.test.selenium.browser.TestUtil;
 import com.liferay.faces.test.selenium.expectedconditions.ElementEnabled;
+import com.liferay.faces.test.selenium.util.ClosableUtil;
 
 
 /**
@@ -59,6 +60,20 @@ public class BrowserDriverImpl implements BrowserDriver {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(BrowserDriverImpl.class);
+
+	// Private Constants
+	private static final String JAVA_IO_TMPDIR;
+
+	static {
+
+		String javaIOTmpdir = System.getProperty("java.io.tmpdir");
+
+		if (!javaIOTmpdir.endsWith(File.separator)) {
+			javaIOTmpdir += File.separator;
+		}
+
+		JAVA_IO_TMPDIR = javaIOTmpdir;
+	}
 
 	// Private Member Variables
 	private boolean browserHeadless;
@@ -88,8 +103,7 @@ public class BrowserDriverImpl implements BrowserDriver {
 	public void captureCurrentBrowserState() {
 
 		String outputDirectoryPath = TestUtil.getSystemPropertyOrDefault(
-				"integration.captured.browser.state.output.directory",
-				TestUtil.JAVA_IO_TMPDIR + "captured-browser-state");
+				"integration.captured.browser.state.output.directory", JAVA_IO_TMPDIR + "captured-browser-state");
 		captureCurrentBrowserState(outputDirectoryPath, null);
 	}
 
@@ -135,7 +149,7 @@ public class BrowserDriverImpl implements BrowserDriver {
 			logger.error("", e);
 		}
 		finally {
-			close(printWriter);
+			ClosableUtil.close(printWriter);
 		}
 
 		String currentUrl = getCurrentWindowUrl();
@@ -161,7 +175,7 @@ public class BrowserDriverImpl implements BrowserDriver {
 				logger.error("", e);
 			}
 			finally {
-				close(fileOutputStream);
+				ClosableUtil.close(fileOutputStream);
 			}
 
 			logger.info("A screenshot of url=\"{}\" has been saved to {}", currentUrl, screenshotFileName);
@@ -506,18 +520,5 @@ public class BrowserDriverImpl implements BrowserDriver {
 				elementMustBeDisplayed, byXpath);
 		waitFor(expectedCondition);
 		logger.info("Text \"{}\" is present in Element {}.", text, elementXpath);
-	}
-
-	private void close(Closeable closeable) {
-
-		if (closeable != null) {
-
-			try {
-				closeable.close();
-			}
-			catch (IOException e) {
-				// do nothing.
-			}
-		}
 	}
 }

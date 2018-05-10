@@ -21,10 +21,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import org.junit.ClassRule;
-
-import org.junit.rules.TemporaryFolder;
-
 import com.liferay.faces.test.selenium.util.ClosableUtil;
 
 
@@ -32,10 +28,6 @@ import com.liferay.faces.test.selenium.util.ClosableUtil;
  * @author  Kyle Stiemann
  */
 public class FileUploadTesterBase extends BrowserDriverManagingTesterBase {
-
-	// Public Constants
-	@ClassRule
-	public static final TemporaryFolder TEMPORARY_FOLDER = new TemporaryFolder();
 
 	/**
 	 * Obtains the path to a test resource on the file system. If the file does not exist, this method copies the test
@@ -49,8 +41,7 @@ public class FileUploadTesterBase extends BrowserDriverManagingTesterBase {
 	 */
 	protected final String getFileSystemPathForResource(String resourceFileName) throws IOException {
 
-		File tempDir = TEMPORARY_FOLDER.getRoot();
-		File resourceFile = new File(tempDir, resourceFileName);
+		File resourceFile = new File(OnDemandTemporaryFolder.INSTANCE, resourceFileName);
 
 		if (!resourceFile.exists()) {
 
@@ -58,15 +49,34 @@ public class FileUploadTesterBase extends BrowserDriverManagingTesterBase {
 
 			try {
 
-				resourceFile = TEMPORARY_FOLDER.newFile(resourceFileName);
 				inputStream = getClass().getClassLoader().getResourceAsStream(resourceFileName);
 				Files.copy(inputStream, resourceFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}
 			finally {
 				ClosableUtil.close(inputStream);
 			}
+
+			resourceFile.deleteOnExit();
 		}
 
 		return resourceFile.getPath();
+	}
+
+	/* package-private */ static final class OnDemandTemporaryFolder {
+
+		// Package-Private Constants
+		/* package-private */ static final File INSTANCE;
+
+		static {
+
+			try {
+				INSTANCE = Files.createTempDirectory("lfts").toFile();
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+			INSTANCE.deleteOnExit();
+		}
 	}
 }

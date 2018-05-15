@@ -27,13 +27,25 @@ public final class TestUtil {
 	// Public Constants
 	public static final String DEFAULT_BASE_URL = "http://" + TestUtil.getHost() + ":" + TestUtil.getPort();
 	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";
+	public static final int DEFAULT_BROWSER_WAIT_TIME_OUT;
+
+	static {
+
+		int defaultBrowserWaitTimeOut = 5;
+
+		if (TestUtil.getContainer().startsWith("pluto")) {
+			defaultBrowserWaitTimeOut = 3;
+		}
+
+		DEFAULT_BROWSER_WAIT_TIME_OUT = defaultBrowserWaitTimeOut;
+	}
 
 	private TestUtil() {
 		throw new AssertionError();
 	}
 
 	public static int getBrowserDriverWaitTimeOut() {
-		return TestUtil.getBrowserDriverWaitTimeOut(5);
+		return TestUtil.getBrowserDriverWaitTimeOut(DEFAULT_BROWSER_WAIT_TIME_OUT);
 	}
 
 	public static int getBrowserDriverWaitTimeOut(Integer defaultTimeOutInSeconds) {

@@ -15,6 +15,8 @@
  */
 package com.liferay.faces.test.selenium.expectedconditions;
 
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -37,18 +39,18 @@ public class ElementEnabled implements ExpectedCondition<WebElement> {
 	@Override
 	public WebElement apply(WebDriver webDriver) {
 
-		WebElement webElement;
+		WebElement webElement = null;
 
 		try {
 
-			webElement = webDriver.findElement(By.xpath(elementXpath));
+			List<WebElement> webElements = webDriver.findElements(By.xpath(elementXpath));
 
-			if (!webElement.isEnabled()) {
-				webElement = null;
+			if (!webElements.isEmpty() && webElements.get(0).isEnabled()) {
+				webElement = webElements.get(0);
 			}
 		}
 		catch (StaleElementReferenceException e) {
-			webElement = null;
+			// Do nothing.
 		}
 
 		return webElement;

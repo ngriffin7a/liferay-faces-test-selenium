@@ -106,6 +106,7 @@
 								<integration.browser.simulate.mobile>${integration.browser.simulate.mobile}</integration.browser.simulate.mobile>
 								<integration.browser.wait.time.out>${integration.browser.wait.time.out}</integration.browser.wait.time.out>
 								<integration.container>${integration.container}</integration.container>
+								<integration.protocol>${integration.protocol}</integration.protocol>
 								<integration.host>${integration.host}</integration.host>
 								<integration.port>${integration.port}</integration.port>
 								<integration.sign.in.context>${integration.sign.in.context}</integration.sign.in.context>

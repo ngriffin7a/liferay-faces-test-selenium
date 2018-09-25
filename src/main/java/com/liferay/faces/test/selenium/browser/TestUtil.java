@@ -25,7 +25,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public final class TestUtil {
 
 	// Public Constants
-	public static final String DEFAULT_BASE_URL = "http://" + TestUtil.getHost() + ":" + TestUtil.getPort();
+	/**
+	 * The default base url which is obtained by combining the return values of {@link #getProtocol()}, {@link
+	 * #getHost()}, and {@link #getPort()}. If <code>getPort()</code> returns a value of -1 or less, it will not be
+	 * used.
+	 */
+	public static final String DEFAULT_BASE_URL;
 	public static final String DEFAULT_PLUTO_CONTEXT = "/pluto/portal";
 	public static final int DEFAULT_BROWSER_DRIVER_WAIT_TIME_OUT;
 
@@ -38,6 +43,21 @@ public final class TestUtil {
 		}
 
 		DEFAULT_BROWSER_DRIVER_WAIT_TIME_OUT = defaultBrowserDriverWaitTimeOut;
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(getProtocol());
+		stringBuilder.append("://");
+		stringBuilder.append(getHost());
+
+		int port = Integer.parseInt(TestUtil.getPort());
+
+		if (port > -1) {
+
+			stringBuilder.append(":");
+			stringBuilder.append(port);
+		}
+
+		DEFAULT_BASE_URL = stringBuilder.toString();
 	}
 
 	private TestUtil() {
@@ -79,6 +99,14 @@ public final class TestUtil {
 
 	public static String getPort(String defaultPort) {
 		return getSystemPropertyOrDefault("integration.port", defaultPort);
+	}
+
+	public static String getProtocol() {
+		return getProtocol("http");
+	}
+
+	public static String getProtocol(String defaultProtocol) {
+		return getSystemPropertyOrDefault("integration.protocol", defaultProtocol);
 	}
 
 	/**

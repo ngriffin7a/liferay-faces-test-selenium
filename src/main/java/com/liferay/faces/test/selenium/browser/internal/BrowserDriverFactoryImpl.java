@@ -88,11 +88,6 @@ public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 				logger.info("Chrome Binary: {}", chromeBinaryPath);
 			}
 
-			if (browserHeadless && browserSimulateMobile) {
-				throw new UnsupportedOperationException(
-					"Headless mode with mobile simulation is not yet supported for Chrome.");
-			}
-
 			if (browserHeadless) {
 
 				// The start-maximized argument does not work correctly in headless mode, so set the window size to

@@ -19,6 +19,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -113,6 +114,18 @@ public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 				logger.info("Firefox Binary: {}", firefoxBinaryPath);
 			}
 
+			String geckoDriverPath = TestUtil.getSystemPropertyOrDefault("webdriver.gecko.driver", null);
+
+			if (geckoDriverPath != null) {
+				logger.info("Gecko Driver: {}", geckoDriverPath);
+			}
+			else {
+				throw new IllegalArgumentException("Firefox requires \"webdriver.gecko.driver\" property to be set");
+			}
+
+			System.setProperty("webdriver.firefox.marionette", "false");
+			System.setProperty("webdriver.gecko.driver", geckoDriverPath);
+
 			FirefoxProfile firefoxProfile = new FirefoxProfile();
 
 			firefoxProfile.setPreference(FirefoxProfile.ALLOWED_HOSTS_PREFERENCE, System.getenv("HOSTNAME") + ",localhost");
@@ -125,7 +138,12 @@ public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 				firefoxProfile.setPreference("general.useragent.override", IPHONE_7_IOS_10_0_USER_AGENT);
 			}
 
-			webDriver = new FirefoxDriver(firefoxProfile);
+			FirefoxOptions firefoxOptions = new FirefoxOptions();
+
+			firefoxOptions.setBinary(firefoxBinaryPath);
+			firefoxOptions.setProfile(firefoxProfile);
+
+			webDriver = new FirefoxDriver(firefoxOptions);
 		}
 		else if ("phantomjs".equals(browserName)) {
 

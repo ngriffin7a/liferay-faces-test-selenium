@@ -128,7 +128,8 @@ public class BrowserDriverFactoryImpl extends BrowserDriverFactory {
 
 			FirefoxProfile firefoxProfile = new FirefoxProfile();
 
-			firefoxProfile.setPreference(FirefoxProfile.ALLOWED_HOSTS_PREFERENCE, System.getenv("HOSTNAME") + ",localhost");
+			firefoxProfile.setPreference(FirefoxProfile.ALLOWED_HOSTS_PREFERENCE,
+				System.getenv("HOSTNAME") + ",localhost");
 
 			if (browserHeadless) {
 				throw new UnsupportedOperationException("Headless mode is not yet supported for Firefox");

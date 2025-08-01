@@ -15,10 +15,8 @@
  */
 package com.liferay.faces.test.selenium.browser.internal;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +32,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -265,12 +264,34 @@ public class BrowserDriverImpl implements BrowserDriver {
 
 	@Override
 	public Action createClickElementAction(String elementXpath) {
-
-		Actions actions = createActions(elementXpath);
 		WebElement webElement = findElementByXpath(elementXpath);
-		actions = actions.click(webElement);
 
-		return actions.build();
+		try {
+			// Scroll the webElement into view before trying to click
+			((JavascriptExecutor) webDriver).executeScript(
+					"arguments[0].scrollIntoView({block: 'center'});", webElement);
+
+			// Optionally check if it's offscreen or not interactable
+			Rectangle rect = webElement.getRect();
+			Dimension dimension = webDriver.manage().window().getSize();
+
+			boolean isVerticallyVisible = rect.getY() >= 0 && rect.getY() + rect.getHeight() <= dimension.getHeight();
+			boolean isHorizontallyVisible = rect.getX() >= 0 && rect.getX() + rect.getWidth() <= dimension.getWidth();
+
+			// Use Actions only if safely in bounds
+			if (isVerticallyVisible && isHorizontallyVisible) {
+				return new Actions(webDriver).moveToElement(webElement).click().build();
+			}
+			else {
+				logger.debug("Element is near or out of viewport bounds — using JS click instead.");
+			}
+		}
+		catch (Exception e) {
+			logger.error("Exception during viewport check — falling back to JS click: {} ", e.getMessage());
+		}
+
+		// JS-based fallback click
+		return () -> ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", webElement);
 	}
 
 	@Override

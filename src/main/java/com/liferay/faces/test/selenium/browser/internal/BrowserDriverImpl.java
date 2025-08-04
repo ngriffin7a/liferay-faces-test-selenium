@@ -15,8 +15,10 @@
  */
 package com.liferay.faces.test.selenium.browser.internal;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -186,8 +188,8 @@ public class BrowserDriverImpl implements BrowserDriver {
 
 		// http://stackoverflow.com/questions/8922107/javascript-scrollintoview-middle-alignment#36499256
 		executeScriptInCurrentWindow(
-			"window.scrollTo(0, (arguments[0].getBoundingClientRect().top + window.pageYOffset) - (window.innerHeight / 2));",
-			findElementByXpath(elementXpath));
+				"window.scrollTo(0, (arguments[0].getBoundingClientRect().top + window.pageYOffset) - (window.innerHeight / 2));",
+				findElementByXpath(elementXpath));
 	}
 
 	@Override
@@ -267,31 +269,38 @@ public class BrowserDriverImpl implements BrowserDriver {
 		WebElement webElement = findElementByXpath(elementXpath);
 
 		try {
-			// Scroll the webElement into view before trying to click
 			((JavascriptExecutor) webDriver).executeScript(
 					"arguments[0].scrollIntoView({block: 'center'});", webElement);
 
-			// Optionally check if it's offscreen or not interactable
 			Rectangle rect = webElement.getRect();
 			Dimension dimension = webDriver.manage().window().getSize();
 
 			boolean isVerticallyVisible = rect.getY() >= 0 && rect.getY() + rect.getHeight() <= dimension.getHeight();
 			boolean isHorizontallyVisible = rect.getX() >= 0 && rect.getX() + rect.getWidth() <= dimension.getWidth();
 
-			// Use Actions only if safely in bounds
 			if (isVerticallyVisible && isHorizontallyVisible) {
 				return new Actions(webDriver).moveToElement(webElement).click().build();
 			}
 			else {
-				logger.debug("Element is near or out of viewport bounds — using JS click instead.");
+				logger.debug("Element is near or out of viewport bounds — JS click fallback will be used");
 			}
 		}
 		catch (Exception e) {
-			logger.error("Exception during viewport check — falling back to JS click: {} ", e.getMessage());
+			logger.error("Viewport detection failed — JS click fallback will be used: {}", e.getMessage());
 		}
 
-		// JS-based fallback click
-		return () -> ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", webElement);
+		// JS fallback wrapped in an Action-like interface
+		return () -> {
+			// Try to focus first, which may help fire blur/change events
+			((JavascriptExecutor) webDriver).executeScript("arguments[0].focus();", webElement);
+			try {
+				Thread.sleep(100); // small pause to simulate human delay
+			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", webElement);
+		};
 	}
 
 	@Override

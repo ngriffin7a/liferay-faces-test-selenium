@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.liferay.faces.test</groupId>
 	<artifactId>com.liferay.faces.test.selenium</artifactId>
-	<version>0.5.6-SNAPSHOT</version>
+	<version>0.5.6</version>
 	<name>Liferay Faces Test Selenium</name>
 	<description>Liferay Faces Test Selenium</description>
 
@@ -64,7 +64,7 @@
 		<connection>scm:git:https://github.com/ngriffin7a/liferay-faces-test-selenium</connection>
 		<developerConnection>scm:git:https://github.com/ngriffin7a/liferay-faces-test-selenium</developerConnection>
 		<url>scm:git:https://github.com/ngriffin7a/liferay-faces-test-selenium</url>
-		<tag>HEAD</tag>
+		<tag>0.5.6</tag>
 	</scm>
 
     <properties>
